@@ -2,6 +2,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:sqlite_bloc_rxdart/data/contact_dao.dart';
 import 'package:sqlite_bloc_rxdart/data/contact_entry.dart';
 import 'package:sqlbrite/sqlbrite.dart';
+import 'package:sqlite_bloc_rxdart/domain/contact.dart';
 
 import 'contact_entity.dart';
 
@@ -41,5 +42,16 @@ class ContactDaoImpl implements ContactDao {
           )
           .mapToOne((row) => ContactEntity.fromJson(row));
     });
+  }
+
+  @override
+  Future<bool> deleteById(int id) async {
+    final db = await _briteDatabaseFuture;
+    final rows = await db.delete(
+      tableContacts,
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+    return rows > 0;
   }
 }

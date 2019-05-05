@@ -5,4 +5,6 @@ abstract class ContactDao {
   Observable<List<ContactEntity>> search(String query);
 
   Observable<ContactEntity> findById(int id);
+
+  Future<bool> deleteById(int id);
 }

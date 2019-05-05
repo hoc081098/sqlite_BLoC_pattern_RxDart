@@ -10,16 +10,27 @@ import 'package:sqlite_bloc_rxdart/pages/home/home_state.dart';
 
 class HomeBloc implements BaseBloc {
   final void Function(String) search;
+  final void Function(Contact) delete;
+
   final ValueObservable<HomeState> state$;
+  final Stream<HomeMessage> message$;
+
   final void Function() _dispose;
 
-  HomeBloc._(this.search, this.state$, this._dispose);
+  HomeBloc._(
+    this.search,
+    this.delete,
+    this.state$,
+    this.message$,
+    this._dispose,
+  );
 
   @override
   void dispose() => _dispose();
 
   factory HomeBloc(final ContactRepository contactRepo) {
     final searchController = PublishSubject<String>();
+    final deleteController = PublishSubject<Contact>();
 
     final state$ = searchController
         .debounceTime(const Duration(milliseconds: 500))
@@ -37,17 +48,32 @@ class HomeBloc implements BaseBloc {
       ),
     );
 
+    final message$ = deleteController.flatMap((contact) async* {
+      yield await contactRepo.delete(contact);
+    }).map((success) {
+      return success
+          ? const DeleteContactSuccess()
+          : const DeleteContactFailure();
+    }).publish();
+
     final subscriptions = [
-      stateDistinct$.listen((state) => print('[HOME_BLOC] state=$state')),
+      message$.listen((message) => print('[HOME_BLOC] message=$message')),
+      stateDistinct$.listen((state) => print('[HOME_BLOC] state.length=${state.contacts.length}')),
       stateDistinct$.connect(),
+      message$.connect(),
     ];
 
     return HomeBloc._(
       searchController.add,
+      deleteController.add,
       stateDistinct$,
+      message$,
       () async {
         await Future.wait(subscriptions.map((s) => s.cancel()));
-        await searchController.close();
+        await Future.wait([
+          searchController,
+          deleteController,
+        ].map((c) => c.close()));
       },
     );
   }

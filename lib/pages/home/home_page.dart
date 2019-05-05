@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:sqlite_bloc_rxdart/domain/contact.dart';
 import 'package:sqlite_bloc_rxdart/pages/home/home_bloc.dart';
 import 'package:sqlite_bloc_rxdart/pages/home/home_state.dart';
+import 'package:sqlite_bloc_rxdart/utils.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -11,11 +16,43 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  StreamSubscription<HomeMessage> _subscription;
+
+  _handleMessage(HomeMessage message) async {
+    if (message is DeleteContactSuccess) {
+      showSnackBar(
+        _scaffoldKey?.currentState,
+        'Delete contact successfully',
+      );
+    }
+    if (message is DeleteContactFailure) {
+      showSnackBar(
+        _scaffoldKey?.currentState,
+        'Delete contact not successfully',
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _subscription ??=
+        BlocProvider.of<HomeBloc>(context).message$.listen(_handleMessage);
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<HomeBloc>(context);
 
     return Scaffold(
+      key: _scaffoldKey,
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
@@ -68,9 +105,8 @@ class _HomePageState extends State<HomePage> {
                               children: <Widget>[
                                 IconButton(
                                   icon: Icon(Icons.remove_circle),
-                                  onPressed: () {
-                                    //TODO: delete contact
-                                  },
+                                  onPressed: () =>
+                                      _showDialogDeleteContact(bloc, contact),
                                 ),
                                 IconButton(
                                   icon: Icon(Icons.edit),
@@ -93,6 +129,37 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  void _showDialogDeleteContact(HomeBloc bloc, Contact contact) async {
+    final delete = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Delete contact'),
+          content: Text('Are you sure you want to delete this contact?'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (delete ?? false) {
+      bloc.delete(contact);
+    }
+  }
 }
 
 class HomeAppBar extends StatefulWidget {
@@ -105,9 +172,8 @@ class _HomeAppBarState extends State<HomeAppBar> with TickerProviderStateMixin {
   bool _isSearching = false;
 
   AnimationController _controller;
-  Animation<double> _opacity;
-  Animation<double> _opacityRev;
-  AnimationController _controllerRev;
+  Animation<double> _opacityTextField;
+  Animation<double> _opacityTitle;
 
   @override
   void initState() {
@@ -117,32 +183,36 @@ class _HomeAppBarState extends State<HomeAppBar> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
-    _controllerRev = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
-    _opacity = Tween<double>(begin: 0, end: 1).animate(
+    _opacityTextField = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeIn,
       ),
     );
-    _opacityRev = Tween<double>(begin: 0, end: 1).animate(
+    _opacityTitle = Tween<double>(begin: 1, end: 0).animate(
       CurvedAnimation(
-        parent: _controllerRev,
+        parent: _controller,
         curve: Curves.easeOut,
       ),
     );
-
     _controller.reverse();
-    _controllerRev.forward();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _controllerRev.dispose();
     super.dispose();
+  }
+
+  void _onIconPressed(HomeBloc bloc) {
+    if (_isSearching) {
+      setState(() => _isSearching = false);
+      _controller.reverse();
+      bloc.search('');
+    } else {
+      setState(() => _isSearching = true);
+      _controller.forward();
+    }
   }
 
   @override
@@ -151,57 +221,41 @@ class _HomeAppBarState extends State<HomeAppBar> with TickerProviderStateMixin {
 
     return Container(
       child: AppBar(
-        title: FadeTransition(
-          opacity: _opacity,
-          child: _isSearching
-              ? TextField(
+        leading: _isSearching
+            ? ScaleTransition(
+                child: IconButton(
+                  tooltip: 'Close search',
+                  icon: Icon(Icons.close),
+                  onPressed: () => _onIconPressed(bloc),
+                ),
+                scale: _opacityTextField,
+              )
+            : ScaleTransition(
+                scale: _opacityTitle,
+                child: IconButton(
+                  tooltip: 'Open search',
+                  icon: Icon(Icons.search),
+                  onPressed: () => _onIconPressed(bloc),
+                ),
+              ),
+        title: _isSearching
+            ? FadeTransition(
+                opacity: _opacityTextField,
+                child: TextField(
                   keyboardType: TextInputType.text,
                   maxLines: 1,
                   onChanged: bloc.search,
                   decoration: InputDecoration(
-                    suffixIcon: Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: IconButton(
-                        tooltip: 'Close search',
-                        icon: Icon(Icons.close),
-                        onPressed: () {
-                          setState(() => _isSearching = false);
-
-                          _controller
-                            ..reset()
-                            ..reverse();
-                          _controllerRev
-                            ..reset()
-                            ..forward();
-                          bloc.search('');
-                        },
-                      ),
-                    ),
                     hintText: 'Search contact...',
-                    border: UnderlineInputBorder(),
+                    border: InputBorder.none,
                   ),
-                )
-              : FadeTransition(
-                  opacity: _opacityRev,
-                  child: Text('Home page'),
                 ),
-        ),
+              )
+            : FadeTransition(
+                opacity: _opacityTitle,
+                child: Text('Home page'),
+              ),
         actions: <Widget>[
-          if (!_isSearching)
-            IconButton(
-              tooltip: 'Open search',
-              icon: Icon(Icons.search),
-              onPressed: () {
-                setState(() => _isSearching = true);
-
-                _controller
-                  ..reset()
-                  ..forward();
-                _controllerRev
-                  ..reset()
-                  ..reverse();
-              },
-            ),
           IconButton(
             tooltip: 'Delete all',
             icon: Icon(Icons.delete),

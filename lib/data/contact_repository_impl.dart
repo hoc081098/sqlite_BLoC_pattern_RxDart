@@ -20,6 +20,11 @@ class ContactRepositoryImpl implements ContactRepository {
   Observable<Contact> getContactById(int id) {
     return _contactDao.findById(id).map(_toContact);
   }
+
+  @override
+  Future<bool> delete(Contact contact) {
+    return _contactDao.deleteById(contact.id);
+  }
 }
 
 Contact _toContact(ContactEntity entity) {
