@@ -25,6 +25,21 @@ class ContactRepositoryImpl implements ContactRepository {
   Future<bool> delete(Contact contact) {
     return _contactDao.deleteById(contact.id);
   }
+
+  @override
+  Future<bool> insert(Contact contact) {
+    return _contactDao.insert(_toEntity(contact));
+  }
+
+  @override
+  Future<bool> update(Contact contact) {
+    return _contactDao.update(_toEntity(contact));
+  }
+
+  @override
+  Future<void> deleteAll() {
+    return _contactDao.deleteAll();
+  }
 }
 
 Contact _toContact(ContactEntity entity) {
@@ -33,7 +48,19 @@ Contact _toContact(ContactEntity entity) {
     ..name = entity.name
     ..phone = entity.phone
     ..address = entity.address
-    ..male = entity.male
+    ..gender = entity.male ? Gender.male : Gender.female
     ..createdAt = entity.createdAt
     ..updatedAt = entity.updatedAt);
+}
+
+ContactEntity _toEntity(Contact contact) {
+  return ContactEntity(
+    address: contact.address,
+    createdAt: contact.createdAt,
+    id: contact.id,
+    male: contact.gender == Gender.male,
+    name: contact.name,
+    phone: contact.phone,
+    updatedAt: contact.updatedAt,
+  );
 }

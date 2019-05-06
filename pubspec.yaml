@@ -11,6 +11,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   built_value: ^6.4.0
   path_provider: ^0.5.0+1
+  intl: ^0.15.8
+  url_launcher: ^4.2.0+3
 
   distinct_value_connectable_observable: ^2.0.1
   sqlbrite: ^1.1.0

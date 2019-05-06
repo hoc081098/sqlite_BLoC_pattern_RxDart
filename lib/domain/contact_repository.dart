@@ -7,4 +7,10 @@ abstract class ContactRepository {
   Observable<Contact> getContactById(int id);
 
   Future<bool> delete(Contact contact);
+
+  Future<bool> update(Contact contact);
+
+  Future<bool> insert(Contact contact);
+
+  Future<void> deleteAll();
 }

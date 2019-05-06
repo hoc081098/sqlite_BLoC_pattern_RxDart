@@ -11,6 +11,7 @@ import 'package:sqlite_bloc_rxdart/pages/home/home_state.dart';
 class HomeBloc implements BaseBloc {
   final void Function(String) search;
   final void Function(Contact) delete;
+  final void Function() deleteAll;
 
   final ValueObservable<HomeState> state$;
   final Stream<HomeMessage> message$;
@@ -18,6 +19,7 @@ class HomeBloc implements BaseBloc {
   final void Function() _dispose;
 
   HomeBloc._(
+    this.deleteAll,
     this.search,
     this.delete,
     this.state$,
@@ -31,6 +33,7 @@ class HomeBloc implements BaseBloc {
   factory HomeBloc(final ContactRepository contactRepo) {
     final searchController = PublishSubject<String>();
     final deleteController = PublishSubject<Contact>();
+    final deleteAllController = PublishSubject<void>();
 
     final state$ = searchController
         .debounceTime(const Duration(milliseconds: 500))
@@ -49,7 +52,11 @@ class HomeBloc implements BaseBloc {
     );
 
     final message$ = deleteController.flatMap((contact) async* {
-      yield await contactRepo.delete(contact);
+      try {
+        yield await contactRepo.delete(contact);
+      } catch (_) {
+        yield false;
+      }
     }).map((success) {
       return success
           ? const DeleteContactSuccess()
@@ -57,13 +64,18 @@ class HomeBloc implements BaseBloc {
     }).publish();
 
     final subscriptions = [
+      deleteAllController.exhaustMap((_) async* {
+          await contactRepo.deleteAll();
+      }).listen(null),
       message$.listen((message) => print('[HOME_BLOC] message=$message')),
-      stateDistinct$.listen((state) => print('[HOME_BLOC] state.length=${state.contacts.length}')),
+      stateDistinct$.listen((state) =>
+          print('[HOME_BLOC] state.length=${state.contacts.length}')),
       stateDistinct$.connect(),
       message$.connect(),
     ];
 
     return HomeBloc._(
+      () => deleteAllController.add(null),
       searchController.add,
       deleteController.add,
       stateDistinct$,
@@ -71,9 +83,11 @@ class HomeBloc implements BaseBloc {
       () async {
         await Future.wait(subscriptions.map((s) => s.cancel()));
         await Future.wait([
+          deleteAllController,
           searchController,
           deleteController,
         ].map((c) => c.close()));
+        print('[HOME_BLOC] disposed');
       },
     );
   }

@@ -3,7 +3,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
+import 'package:flutter_provider/flutter_provider.dart';
 import 'package:sqlite_bloc_rxdart/domain/contact.dart';
+import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
+import 'package:sqlite_bloc_rxdart/pages/detail/detail_bloc.dart';
+import 'package:sqlite_bloc_rxdart/pages/detail/detail_page.dart';
+import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_bloc.dart';
+import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_page.dart';
 import 'package:sqlite_bloc_rxdart/pages/home/home_bloc.dart';
 import 'package:sqlite_bloc_rxdart/pages/home/home_state.dart';
 import 'package:sqlite_bloc_rxdart/utils.dart';
@@ -53,6 +59,30 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       key: _scaffoldKey,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return BlocProvider<EditOrAddBloc>(
+                  initBloc: () {
+                    return EditOrAddBloc(
+                      Provider.of<ContactRepository>(context),
+                      true,
+                    );
+                  },
+                  child: EditOrAddPage(
+                    addMode: true,
+                  ),
+                );
+              },
+            ),
+          );
+        },
+        tooltip: 'Add new contact',
+        child: Icon(Icons.add),
+      ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
@@ -85,7 +115,25 @@ class _HomePageState extends State<HomePage> {
                           final contact = state.contacts[index];
 
                           return ListTile(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return BlocProvider<DetailBloc>(
+                                      initBloc: () {
+                                        return DetailBloc(
+                                          Provider.of<ContactRepository>(
+                                              context),
+                                          contact,
+                                        );
+                                      },
+                                      child: const DetailPage(),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
                             title: Text(contact.name),
                             subtitle: Text(
                               '${contact.phone} - ${contact.address}',
@@ -99,22 +147,10 @@ class _HomePageState extends State<HomePage> {
                               ),
                               foregroundColor: Colors.white,
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                IconButton(
-                                  icon: Icon(Icons.remove_circle),
-                                  onPressed: () =>
-                                      _showDialogDeleteContact(bloc, contact),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.edit),
-                                  onPressed: () {
-                                    //TODO: edit contact
-                                  },
-                                )
-                              ],
+                            trailing: IconButton(
+                              icon: Icon(Icons.remove_circle),
+                              onPressed: () =>
+                                  _showDialogDeleteContact(bloc, contact),
                             ),
                           );
                         },
@@ -259,10 +295,42 @@ class _HomeAppBarState extends State<HomeAppBar> with TickerProviderStateMixin {
           IconButton(
             tooltip: 'Delete all',
             icon: Icon(Icons.delete),
-            onPressed: () {},
+            onPressed: () => _showDialogDeleteAll(bloc),
           )
         ],
       ),
     );
+  }
+
+  void _showDialogDeleteAll(HomeBloc bloc) async {
+    final delete = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Delete all contacts'),
+          content: Text(
+              'Are you sure you want to delete all contacts? This action cannot be undone'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (delete ?? false) {
+      bloc.deleteAll();
+    }
   }
 }

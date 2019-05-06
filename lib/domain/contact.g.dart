@@ -6,6 +6,25 @@ part of 'contact.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
+const Gender _$male = const Gender._('male');
+const Gender _$female = const Gender._('female');
+
+Gender _$valueOf(String name) {
+  switch (name) {
+    case 'male':
+      return _$male;
+    case 'female':
+      return _$female;
+    default:
+      throw new ArgumentError(name);
+  }
+}
+
+final BuiltSet<Gender> _$values = new BuiltSet<Gender>(const <Gender>[
+  _$male,
+  _$female,
+]);
+
 class _$Contact extends Contact {
   @override
   final int id;
@@ -16,7 +35,7 @@ class _$Contact extends Contact {
   @override
   final String address;
   @override
-  final bool male;
+  final Gender gender;
   @override
   final DateTime updatedAt;
   @override
@@ -30,7 +49,7 @@ class _$Contact extends Contact {
       this.name,
       this.phone,
       this.address,
-      this.male,
+      this.gender,
       this.updatedAt,
       this.createdAt})
       : super._() {
@@ -46,8 +65,8 @@ class _$Contact extends Contact {
     if (address == null) {
       throw new BuiltValueNullFieldError('Contact', 'address');
     }
-    if (male == null) {
-      throw new BuiltValueNullFieldError('Contact', 'male');
+    if (gender == null) {
+      throw new BuiltValueNullFieldError('Contact', 'gender');
     }
     if (updatedAt == null) {
       throw new BuiltValueNullFieldError('Contact', 'updatedAt');
@@ -72,7 +91,7 @@ class _$Contact extends Contact {
         name == other.name &&
         phone == other.phone &&
         address == other.address &&
-        male == other.male &&
+        gender == other.gender &&
         updatedAt == other.updatedAt &&
         createdAt == other.createdAt;
   }
@@ -86,7 +105,7 @@ class _$Contact extends Contact {
                     $jc($jc($jc(0, id.hashCode), name.hashCode),
                         phone.hashCode),
                     address.hashCode),
-                male.hashCode),
+                gender.hashCode),
             updatedAt.hashCode),
         createdAt.hashCode));
   }
@@ -98,7 +117,7 @@ class _$Contact extends Contact {
           ..add('name', name)
           ..add('phone', phone)
           ..add('address', address)
-          ..add('male', male)
+          ..add('gender', gender)
           ..add('updatedAt', updatedAt)
           ..add('createdAt', createdAt))
         .toString();
@@ -124,9 +143,9 @@ class ContactBuilder implements Builder<Contact, ContactBuilder> {
   String get address => _$this._address;
   set address(String address) => _$this._address = address;
 
-  bool _male;
-  bool get male => _$this._male;
-  set male(bool male) => _$this._male = male;
+  Gender _gender;
+  Gender get gender => _$this._gender;
+  set gender(Gender gender) => _$this._gender = gender;
 
   DateTime _updatedAt;
   DateTime get updatedAt => _$this._updatedAt;
@@ -144,7 +163,7 @@ class ContactBuilder implements Builder<Contact, ContactBuilder> {
       _name = _$v.name;
       _phone = _$v.phone;
       _address = _$v.address;
-      _male = _$v.male;
+      _gender = _$v.gender;
       _updatedAt = _$v.updatedAt;
       _createdAt = _$v.createdAt;
       _$v = null;
@@ -173,7 +192,7 @@ class ContactBuilder implements Builder<Contact, ContactBuilder> {
             name: name,
             phone: phone,
             address: address,
-            male: male,
+            gender: gender,
             updatedAt: updatedAt,
             createdAt: createdAt);
     replace(_$result);

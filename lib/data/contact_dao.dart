@@ -7,4 +7,10 @@ abstract class ContactDao {
   Observable<ContactEntity> findById(int id);
 
   Future<bool> deleteById(int id);
+
+  Future<bool> insert(ContactEntity entity);
+
+  Future<bool> update(ContactEntity entity);
+
+  Future<void> deleteAll();
 }
