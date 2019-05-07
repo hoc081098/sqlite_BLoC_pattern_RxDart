@@ -53,9 +53,6 @@ class _$Contact extends Contact {
       this.updatedAt,
       this.createdAt})
       : super._() {
-    if (id == null) {
-      throw new BuiltValueNullFieldError('Contact', 'id');
-    }
     if (name == null) {
       throw new BuiltValueNullFieldError('Contact', 'name');
     }
@@ -70,9 +67,6 @@ class _$Contact extends Contact {
     }
     if (updatedAt == null) {
       throw new BuiltValueNullFieldError('Contact', 'updatedAt');
-    }
-    if (createdAt == null) {
-      throw new BuiltValueNullFieldError('Contact', 'createdAt');
     }
   }
 

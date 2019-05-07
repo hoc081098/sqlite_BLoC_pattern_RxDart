@@ -40,7 +40,7 @@ class ContactEntity {
       columnPhone: phone,
       columnMale: male ? 1 : 0,
       columnUpdatedAt: updatedAt.toIso8601String(),
-      columnCreatedAt: createdAt.toIso8601String(),
-    };
+      columnCreatedAt: createdAt?.toIso8601String(),
+    }..removeWhere((_, v) => v == null);
   }
 }

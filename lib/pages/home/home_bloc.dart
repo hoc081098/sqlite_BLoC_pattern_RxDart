@@ -65,7 +65,7 @@ class HomeBloc implements BaseBloc {
 
     final subscriptions = [
       deleteAllController.exhaustMap((_) async* {
-          await contactRepo.deleteAll();
+        await contactRepo.deleteAll();
       }).listen(null),
       message$.listen((message) => print('[HOME_BLOC] message=$message')),
       stateDistinct$.listen((state) =>

@@ -66,134 +66,132 @@ class _DetailPageState extends State<DetailPage> {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          CustomScrollView(
-            controller: scrollController,
-            slivers: <Widget>[
-              SliverAppBar(
-                expandedHeight: 240,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: StreamBuilder<Contact>(
-                    stream: bloc.contact$,
-                    initialData: bloc.contact$.value,
-                    builder: (context, snapshot) => Text(snapshot.data.name),
-                  ),
-                  background: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: <Color>[
-                          Theme.of(context).accentColor,
-                          Theme.of(context).primaryColor,
-                        ],
-                        begin: AlignmentDirectional.topStart,
-                        end: AlignmentDirectional.bottomEnd,
+      body: StreamBuilder<Contact>(
+          stream: bloc.contact$,
+          initialData: bloc.contact$.value,
+          builder: (context, snapshot) {
+            final contact = snapshot.data;
+
+            return Stack(
+              children: <Widget>[
+                CustomScrollView(
+                  controller: scrollController,
+                  slivers: <Widget>[
+                    SliverAppBar(
+                      expandedHeight: 240,
+                      pinned: true,
+                      flexibleSpace: FlexibleSpaceBar(
+                        title: Text(contact.name),
+                        background: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: <Color>[
+                                Theme.of(context).accentColor,
+                                Theme.of(context).primaryColor,
+                              ],
+                              begin: AlignmentDirectional.topStart,
+                              end: AlignmentDirectional.bottomEnd,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-              StreamBuilder<Contact>(
-                stream: bloc.contact$,
-                initialData: bloc.contact$.value,
-                builder: (context, snapshot) {
-                  final contact = snapshot.data;
-                  return SliverList(
-                    delegate: SliverChildListDelegate.fixed(
-                      <Widget>[
-                        ListTile(
-                          leading: Icon(Icons.phone),
-                          title: Text('Phone number: '),
-                          subtitle: Text(contact.phone),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.call),
-                                onPressed: () => _call(contact.phone),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.sms),
-                                onPressed: () => _sms(contact.phone),
-                              ),
-                            ],
+                    SliverList(
+                      delegate: SliverChildListDelegate.fixed(
+                        <Widget>[
+                          ListTile(
+                            leading: Icon(Icons.phone),
+                            title: Text('Phone number: '),
+                            subtitle: Text(contact.phone),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                IconButton(
+                                  icon: Icon(Icons.call),
+                                  onPressed: () => _call(contact.phone),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.sms),
+                                  onPressed: () => _sms(contact.phone),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.label_outline),
-                          title: Text('Address: '),
-                          subtitle: Text(contact.address),
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.person_outline),
-                          title: Text('Gender: '),
-                          subtitle: Text(
-                            contact.gender == Gender.male
-                                ? 'Male'
-                                : contact.gender == Gender.female
-                                    ? 'Female'
-                                    : '???',
+                          ListTile(
+                            leading: Icon(Icons.label_outline),
+                            title: Text('Address: '),
+                            subtitle: Text(contact.address),
                           ),
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.create),
-                          title: Text('Created at: '),
-                          subtitle: Text(
-                            _dateFormat.format(contact.createdAt),
+                          ListTile(
+                            leading: Icon(Icons.person_outline),
+                            title: Text('Gender: '),
+                            subtitle: Text(
+                              contact.gender == Gender.male
+                                  ? 'Male'
+                                  : contact.gender == Gender.female
+                                      ? 'Female'
+                                      : '???',
+                            ),
                           ),
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.update),
-                          title: Text('Updated at: '),
-                          subtitle: Text(
-                            _dateFormat.format(contact.updatedAt),
+                          ListTile(
+                            leading: Icon(Icons.create),
+                            title: Text('Created at: '),
+                            subtitle: Text(
+                              _dateFormat.format(contact.createdAt),
+                            ),
                           ),
-                        ),
-                        Container(
-                          height: height / 2,
-                          width: double.infinity,
-                        ),
-                      ],
+                          ListTile(
+                            leading: Icon(Icons.update),
+                            title: Text('Updated at: '),
+                            subtitle: Text(
+                              _dateFormat.format(contact.updatedAt),
+                            ),
+                          ),
+                          Container(
+                            height: height / 2,
+                            width: double.infinity,
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
-              ),
-            ],
-          ),
-          Positioned(
-            child: Transform.scale(
-              scale: _scale,
-              child: FloatingActionButton(
-                elevation: 12,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return BlocProvider<EditOrAddBloc>(
-                          initBloc: () {
-                            return EditOrAddBloc(
-                              Provider.of<ContactRepository>(context),
-                              false,
-                            );
-                          },
-                          child: EditOrAddPage(
-                            addMode: false,
+                  ],
+                ),
+                Positioned(
+                  child: Transform.scale(
+                    scale: _scale,
+                    child: FloatingActionButton(
+                      elevation: 12,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return BlocProvider<EditOrAddBloc>(
+                                initBloc: () {
+                                  return EditOrAddBloc(
+                                    Provider.of<ContactRepository>(context),
+                                    false,
+                                    contact: contact,
+                                  );
+                                },
+                                child: EditOrAddPage(
+                                  addMode: false,
+                                  contact: contact,
+                                ),
+                              );
+                            },
                           ),
                         );
                       },
+                      child: Icon(Icons.mode_edit),
                     ),
-                  );
-                },
-                child: Icon(Icons.mode_edit),
-              ),
-            ),
-            top: _top,
-            right: 16.0,
-          ),
-        ],
-      ),
+                  ),
+                  top: _top,
+                  right: 16.0,
+                ),
+              ],
+            );
+          }),
     );
   }
 

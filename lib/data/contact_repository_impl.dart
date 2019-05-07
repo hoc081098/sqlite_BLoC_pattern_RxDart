@@ -43,14 +43,16 @@ class ContactRepositoryImpl implements ContactRepository {
 }
 
 Contact _toContact(ContactEntity entity) {
-  return Contact((b) => b
-    ..id = entity.id
-    ..name = entity.name
-    ..phone = entity.phone
-    ..address = entity.address
-    ..gender = entity.male ? Gender.male : Gender.female
-    ..createdAt = entity.createdAt
-    ..updatedAt = entity.updatedAt);
+  return Contact(
+    (b) => b
+      ..id = entity.id
+      ..name = entity.name
+      ..phone = entity.phone
+      ..address = entity.address
+      ..gender = entity.male ? Gender.male : Gender.female
+      ..createdAt = entity.createdAt
+      ..updatedAt = entity.updatedAt,
+  );
 }
 
 ContactEntity _toEntity(Contact contact) {

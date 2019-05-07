@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:sqlite_bloc_rxdart/domain/contact.dart';
 import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_bloc.dart';
@@ -8,12 +10,15 @@ import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_state.dart';
 import 'package:sqlite_bloc_rxdart/utils.dart';
 
 class EditOrAddPage extends StatefulWidget {
+  final Contact contact;
   final bool addMode;
 
   const EditOrAddPage({
     Key key,
     @required this.addMode,
+    this.contact,
   })  : assert(addMode != null),
+        assert(addMode || contact != null),
         super(key: key);
 
   @override
@@ -21,7 +26,7 @@ class EditOrAddPage extends StatefulWidget {
 }
 
 class _EditOrAddPageState extends State<EditOrAddPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   StreamSubscription<EditOrAddMessage> _subscriptionMessage;
@@ -32,6 +37,13 @@ class _EditOrAddPageState extends State<EditOrAddPage>
 
   FocusNode _phoneFocusNode;
   FocusNode _addressFocusNode;
+
+  TextEditingController _nameTextEditingController;
+  TextEditingController _phoneTextEditingController;
+  TextEditingController _addressTextEditingController;
+
+  AnimationController _logoAnimController;
+  Animation<double> _turns;
 
   @override
   void initState() {
@@ -50,6 +62,24 @@ class _EditOrAddPageState extends State<EditOrAddPage>
 
     _phoneFocusNode = FocusNode();
     _addressFocusNode = FocusNode();
+
+    _nameTextEditingController = TextEditingController(
+      text: widget.contact?.name ?? '',
+    );
+    _phoneTextEditingController = TextEditingController(
+      text: widget.contact?.phone ?? '',
+    );
+    _addressTextEditingController = TextEditingController(
+      text: widget.contact?.address ?? '',
+    );
+
+    _logoAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        seconds: 2,
+      ),
+    )..repeat();
+    _turns = Tween(begin: 0.0, end: 1.0).animate(_logoAnimController);
   }
 
   @override
@@ -102,9 +132,15 @@ class _EditOrAddPageState extends State<EditOrAddPage>
 
   @override
   void dispose() {
+    _nameTextEditingController.dispose();
+    _phoneTextEditingController.dispose();
+    _addressTextEditingController.dispose();
+    _fadeController.dispose();
+    _logoAnimController.dispose();
+
     _subscriptionIsLoading?.cancel();
     _subscriptionMessage?.cancel();
-    _fadeController.dispose();
+
     super.dispose();
   }
 
@@ -119,10 +155,13 @@ class _EditOrAddPageState extends State<EditOrAddPage>
           if (nameError is LengthOfNameIsLessThanThreeCharacters) {
             return 'At least 3 characters';
           }
+          return null;
         }
+
         final errorText = getErrorText(snapshot.data);
 
         return TextField(
+          controller: _nameTextEditingController,
           autocorrect: true,
           decoration: InputDecoration(
             prefixIcon: Padding(
@@ -148,10 +187,17 @@ class _EditOrAddPageState extends State<EditOrAddPage>
     final phoneTextField = StreamBuilder<PhoneError>(
       stream: bloc.phoneError$,
       builder: (context, snapshot) {
-        getErrorText(PhoneError phoneError) {}
+        getErrorText(PhoneError phoneError) {
+          if (phoneError is InvalidPhoneNumber) {
+            return 'Invalid phone number';
+          }
+          return null;
+        }
+
         final errorText = getErrorText(snapshot.data);
 
         return TextField(
+          controller: _phoneTextEditingController,
           focusNode: _phoneFocusNode,
           autocorrect: true,
           decoration: InputDecoration(
@@ -178,10 +224,17 @@ class _EditOrAddPageState extends State<EditOrAddPage>
     final addressTextField = StreamBuilder<AddressError>(
       stream: bloc.addressError$,
       builder: (context, snapshot) {
-        getErrorText(AddressError phoneError) {}
+        getErrorText(AddressError addressError) {
+          if (addressError is LengthOfAddressIsLessThanThreeCharacters) {
+            return 'At least 3 characters';
+          }
+          return null;
+        }
+
         final errorText = getErrorText(snapshot.data);
 
         return TextField(
+          controller: _addressTextEditingController,
           focusNode: _addressFocusNode,
           autocorrect: true,
           decoration: InputDecoration(
@@ -218,7 +271,12 @@ class _EditOrAddPageState extends State<EditOrAddPage>
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 24),
+                SizedBox(height: 16),
+                RotationTransition(
+                  turns: _turns,
+                  alignment: Alignment.center,
+                  child: FlutterLogo(size: 72),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: nameTextField,
@@ -271,7 +329,7 @@ class _EditOrAddPageState extends State<EditOrAddPage>
                   child: FadeTransition(
                     opacity: _fadeAnim,
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                       ),
@@ -286,18 +344,16 @@ class _EditOrAddPageState extends State<EditOrAddPage>
                     child: Text(
                       widget.addMode ? 'Add' : 'Update',
                     ),
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(24),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                        8,
-                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     color: Theme.of(context).cardColor,
                     splashColor: Theme.of(context).accentColor,
                     onPressed: bloc.submit,
                   ),
                 ),
-                SizedBox(height: 24),
+                SizedBox(height: 16),
               ],
             ),
           ),

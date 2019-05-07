@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
@@ -48,17 +49,23 @@ class EditOrAddBloc implements BaseBloc {
 
   factory EditOrAddBloc(
     final ContactRepository contactRepo,
-    final bool addMode,
-  ) {
+    final bool addMode, {
+    Contact contact,
+  }) {
     assert(contactRepo != null, 'contactRepo cannot be null');
     assert(addMode != null, 'addMode cannot be null');
+    assert(addMode || contact != null,
+        'contact must be not null when in editing mode');
 
     //ignore_for_file: close_sinks
 
-    final nameController = BehaviorSubject<String>.seeded('');
-    final phoneController = BehaviorSubject<String>.seeded('');
-    final addressController = BehaviorSubject<String>.seeded('');
-    final genderController = BehaviorSubject<Gender>.seeded(Gender.male);
+    final nameController = BehaviorSubject<String>.seeded(contact?.name ?? '');
+    final phoneController =
+        BehaviorSubject<String>.seeded(contact?.phone ?? '');
+    final addressController =
+        BehaviorSubject<String>.seeded(contact?.address ?? '');
+    final genderController =
+        BehaviorSubject<Gender>.seeded(contact?.gender ?? Gender.male);
     final submitController = PublishSubject<void>();
     final isLoadingController = BehaviorSubject<bool>.seeded(false);
 
@@ -113,8 +120,9 @@ class EditOrAddBloc implements BaseBloc {
       submit$
           .where((isValid) => isValid)
           .exhaustMap((_) => _performInsertOrUpdate(
-                addMode,
                 contactRepo,
+                addMode,
+                contact?.id,
                 nameController.value,
                 phoneController.value,
                 addressController.value,
@@ -124,6 +132,13 @@ class EditOrAddBloc implements BaseBloc {
     ]).publish();
 
     final subscriptions = <StreamSubscription>[
+      nameController.listen((name) => print('[EDIT_OR_ADD_BLOC] name=$name')),
+      phoneController
+          .listen((phone) => print('[EDIT_OR_ADD_BLOC] phone=$phone')),
+      addressController
+          .listen((address) => print('[EDIT_OR_ADD_BLOC] address=$address')),
+      genderController
+          .listen((gender) => print('[EDIT_OR_ADD_BLOC] gender=$gender')),
       message$
           .listen((message) => print('[EDIT_OR_ADD_BLOC] message=$message')),
       message$.connect(),
@@ -150,8 +165,9 @@ class EditOrAddBloc implements BaseBloc {
   }
 
   static Stream<EditOrAddMessage> _performInsertOrUpdate(
-    bool addMode,
     ContactRepository contactRepo,
+    bool addMode,
+    int id,
     String name,
     String phone,
     String address,
@@ -166,6 +182,7 @@ class EditOrAddBloc implements BaseBloc {
         final success = await contactRepo.insert(
           Contact(
             (b) => b
+              ..id = id
               ..name = name
               ..phone = phone
               ..address = address
@@ -189,6 +206,7 @@ class EditOrAddBloc implements BaseBloc {
         final success = await contactRepo.update(
           Contact(
             (b) => b
+              ..id = id
               ..name = name
               ..phone = phone
               ..address = address
