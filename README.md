@@ -2,6 +2,13 @@
 
 A new Flutter project.
 
+# Screenshots
+
+| Home page  | Detail page & Edit page | Add new page |
+| ------------- | ------------- | --------------
+| ![home](screenshots/home.gif)  | ![detail_and_edit](screenshots/detail_and_edit.gif)  | ![add_new](screenshots/add_new.gif)  |
+
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
