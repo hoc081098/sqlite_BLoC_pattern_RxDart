@@ -1,14 +1,16 @@
 import 'package:built_collection/built_collection.dart';
-import 'package:flutter/foundation.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact.dart';
-
 import 'package:built_value/built_value.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../domain/contact.dart';
 
 part 'home_state.g.dart';
 
 abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
   BuiltList<Contact> get contacts;
+
   bool get isLoading;
+
   @nullable
   Object get error;
 

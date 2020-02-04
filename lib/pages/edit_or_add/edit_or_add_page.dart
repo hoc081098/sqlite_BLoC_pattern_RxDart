@@ -4,10 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact.dart';
-import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_bloc.dart';
-import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_state.dart';
-import 'package:sqlite_bloc_rxdart/utils.dart';
+
+import '../../domain/contact.dart';
+import '../../utils.dart';
+import 'edit_or_add_bloc.dart';
+import 'edit_or_add_state.dart';
 
 class EditOrAddPage extends StatefulWidget {
   final Contact contact;

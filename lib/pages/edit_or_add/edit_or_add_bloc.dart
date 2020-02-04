@@ -4,9 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
-import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_state.dart';
+
+import '../../domain/contact.dart';
+import '../../domain/contact_repository.dart';
+import 'edit_or_add_state.dart';
 
 bool _isValidPhone(String phone) {
   final _phoneRegExpString = r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$';

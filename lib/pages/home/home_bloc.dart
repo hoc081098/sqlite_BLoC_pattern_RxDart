@@ -1,10 +1,10 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
-import 'package:sqlite_bloc_rxdart/pages/home/home_state.dart';
+
+import '../../domain/contact.dart';
+import '../../domain/contact_repository.dart';
+import 'home_state.dart';
 
 // ignore_for_file: close_sinks
 
@@ -42,11 +42,7 @@ class HomeBloc implements BaseBloc {
         .distinct()
         .switchMap((s) => _performSearch(contactRepo, s))
         .publishValueSeededDistinct(
-          seedValue: HomeState(
-            (b) => b
-              ..contacts = ListBuilder<Contact>()
-              ..isLoading = true,
-          ),
+          seedValue: HomeState((b) => b..isLoading = true),
         );
 
     final message$ = deleteController.flatMap((contact) async* {
@@ -92,27 +88,20 @@ class HomeBloc implements BaseBloc {
 
   static Stream<HomeState> _performSearch(
     ContactRepository contactRepo,
-    String s,
+    String query,
   ) {
-    return contactRepo.search(query: s).map((contacts) {
-      return HomeState(
-        (b) => b
-          ..contacts = ListBuilder<Contact>(contacts)
-          ..isLoading = false,
-      );
-    }).onErrorReturnWith((e) {
-      return HomeState(
-        (b) => b
-          ..contacts = ListBuilder<Contact>()
-          ..error = e
-          ..isLoading = false,
-      );
-    }).startWith(
-      HomeState(
-        (b) => b
-          ..contacts = ListBuilder<Contact>()
-          ..isLoading = true,
-      ),
-    );
+    return contactRepo
+        .search(query: query)
+        .map(
+          (contacts) => HomeState((b) => b
+            ..contacts.replace(contacts)
+            ..isLoading = false),
+        )
+        .onErrorReturnWith(
+          (e) => HomeState((b) => b
+            ..error = e
+            ..isLoading = false),
+        )
+        .startWith(HomeState((b) => b.isLoading = true));
   }
 }

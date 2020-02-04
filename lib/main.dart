@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sqlite_bloc_rxdart/app.dart';
-import 'package:sqlite_bloc_rxdart/data/app_database.dart';
-import 'package:sqlite_bloc_rxdart/data/contact_repository_impl.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
 import 'package:flutter_provider/flutter_provider.dart';
+
+import 'app.dart';
+import 'data/contact_repository_impl.dart';
+import 'data/local/app_database.dart';
+import 'domain/contact_repository.dart';
 
 void main() {
   final appDatabase = AppDatabase();

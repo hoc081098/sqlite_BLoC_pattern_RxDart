@@ -4,15 +4,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
-import 'package:sqlite_bloc_rxdart/pages/detail/detail_bloc.dart';
-import 'package:sqlite_bloc_rxdart/pages/detail/detail_page.dart';
-import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_bloc.dart';
-import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_page.dart';
-import 'package:sqlite_bloc_rxdart/pages/home/home_bloc.dart';
-import 'package:sqlite_bloc_rxdart/pages/home/home_state.dart';
-import 'package:sqlite_bloc_rxdart/utils.dart';
+
+import '../../domain/contact.dart';
+import '../../domain/contact_repository.dart';
+import '../../utils.dart';
+import '../detail/detail_bloc.dart';
+import '../detail/detail_page.dart';
+import '../edit_or_add/edit_or_add_bloc.dart';
+import '../edit_or_add/edit_or_add_page.dart';
+import 'home_bloc.dart';
+import 'home_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);

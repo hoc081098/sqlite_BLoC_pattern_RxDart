@@ -1,4 +1,4 @@
-import 'package:sqlite_bloc_rxdart/domain/contact.dart';
+import 'contact.dart';
 
 abstract class ContactRepository {
   Stream<List<Contact>> search({String query = ''});

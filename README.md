@@ -1,23 +1,10 @@
 # sqlite_bloc_rxdart
 
-A new Flutter project.
+sqlite BLoC rxdart
 
 # Screenshots
 
 | Home page  | Detail page & Edit page | Add new page |
 | ------------- | ------------- | --------------
-| ![home](screenshots/home.gif)  | ![detail_and_edit](screenshots/detail_and_edit.gif)  | ![add_new](screenshots/add_new.gif)  |
+| ![home](https://github.com/hoc081098/hoc081098.github.io/blob/master/sqlite_bloc_rxdart/home.gif?raw=true)  | ![detail_and_edit](https://github.com/hoc081098/hoc081098.github.io/blob/master/sqlite_bloc_rxdart/detail_and_edit.gif?raw=true)  | ![add_new](https://github.com/hoc081098/hoc081098.github.io/blob/master/sqlite_bloc_rxdart/add_new.gif?raw=true)  |
 
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
-import 'package:sqlite_bloc_rxdart/pages/detail/detail_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_bloc.dart';
-import 'package:sqlite_bloc_rxdart/pages/edit_or_add/edit_or_add_page.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../domain/contact.dart';
+import '../../domain/contact_repository.dart';
+import '../edit_or_add/edit_or_add_bloc.dart';
+import '../edit_or_add/edit_or_add_page.dart';
+import 'detail_bloc.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({Key key}) : super(key: key);
@@ -96,64 +97,7 @@ class _DetailPageState extends State<DetailPage> {
                         ),
                       ),
                     ),
-                    SliverList(
-                      delegate: SliverChildListDelegate.fixed(
-                        <Widget>[
-                          ListTile(
-                            leading: Icon(Icons.phone),
-                            title: Text('Phone number: '),
-                            subtitle: Text(contact.phone),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                IconButton(
-                                  icon: Icon(Icons.call),
-                                  onPressed: () => _call(contact.phone),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.sms),
-                                  onPressed: () => _sms(contact.phone),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.label_outline),
-                            title: Text('Address: '),
-                            subtitle: Text(contact.address),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.person_outline),
-                            title: Text('Gender: '),
-                            subtitle: Text(
-                              contact.gender == Gender.male
-                                  ? 'Male'
-                                  : contact.gender == Gender.female
-                                      ? 'Female'
-                                      : '???',
-                            ),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.create),
-                            title: Text('Created at: '),
-                            subtitle: Text(
-                              _dateFormat.format(contact.createdAt),
-                            ),
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.update),
-                            title: Text('Updated at: '),
-                            subtitle: Text(
-                              _dateFormat.format(contact.updatedAt),
-                            ),
-                          ),
-                          Container(
-                            height: height / 2,
-                            width: double.infinity,
-                          ),
-                        ],
-                      ),
-                    ),
+                    _buildDetailContent(contact, height),
                   ],
                 ),
                 Positioned(
@@ -192,6 +136,65 @@ class _DetailPageState extends State<DetailPage> {
               ],
             );
           }),
+    );
+  }
+
+  Widget _buildDetailContent(Contact contact, double height) {
+    return SliverList(
+      delegate: SliverChildListDelegate.fixed(
+        <Widget>[
+          ListTile(
+            leading: Icon(Icons.phone),
+            title: Text('Phone number: '),
+            subtitle: Text(contact.phone),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.call),
+                  onPressed: () => _call(contact.phone),
+                ),
+                IconButton(
+                  icon: Icon(Icons.sms),
+                  onPressed: () => _sms(contact.phone),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.label_outline),
+            title: Text('Address: '),
+            subtitle: Text(contact.address),
+          ),
+          ListTile(
+            leading: Icon(Icons.person_outline),
+            title: Text('Gender: '),
+            subtitle: Text(
+              contact.gender == Gender.male
+                  ? 'Male'
+                  : contact.gender == Gender.female ? 'Female' : '???',
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.create),
+            title: Text('Created at: '),
+            subtitle: Text(
+              _dateFormat.format(contact.createdAt),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.update),
+            title: Text('Updated at: '),
+            subtitle: Text(
+              _dateFormat.format(contact.updatedAt),
+            ),
+          ),
+          Container(
+            height: height / 2,
+            width: double.infinity,
+          ),
+        ],
+      ),
     );
   }
 

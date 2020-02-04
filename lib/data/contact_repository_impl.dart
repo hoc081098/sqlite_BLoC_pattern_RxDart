@@ -1,7 +1,7 @@
-import 'package:sqlite_bloc_rxdart/data/contact_dao.dart';
-import 'package:sqlite_bloc_rxdart/data/contact_entity.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
+import '../domain/contact.dart';
+import '../domain/contact_repository.dart';
+import 'local/dao/contact_dao.dart';
+import 'local/dao/contact_entity.dart';
 
 class ContactRepositoryImpl implements ContactRepository {
   final ContactDao _contactDao;
@@ -10,8 +10,8 @@ class ContactRepositoryImpl implements ContactRepository {
 
   @override
   Stream<List<Contact>> search({String query = ''}) {
-    return _contactDao.search(query).map((entites) {
-      return entites.map(_toContact).toList(growable: false);
+    return _contactDao.search(query).map((entities) {
+      return entities.map(_toContact).toList(growable: false);
     });
   }
 

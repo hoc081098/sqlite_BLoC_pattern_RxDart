@@ -1,8 +1,9 @@
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact.dart';
-import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
+
+import '../../domain/contact.dart';
+import '../../domain/contact_repository.dart';
 
 class DetailBloc implements BaseBloc {
   final ValueStream<Contact> contact$;
