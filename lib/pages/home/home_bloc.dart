@@ -1,9 +1,9 @@
 import 'package:built_collection/built_collection.dart';
+import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqlite_bloc_rxdart/domain/contact.dart';
 import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
-import 'package:distinct_value_connectable_observable/distinct_value_connectable_observable.dart';
 import 'package:sqlite_bloc_rxdart/pages/home/home_state.dart';
 
 // ignore_for_file: close_sinks
@@ -13,7 +13,7 @@ class HomeBloc implements BaseBloc {
   final void Function(Contact) delete;
   final void Function() deleteAll;
 
-  final ValueObservable<HomeState> state$;
+  final ValueStream<HomeState> state$;
   final Stream<HomeMessage> message$;
 
   final void Function() _dispose;
@@ -40,16 +40,14 @@ class HomeBloc implements BaseBloc {
         .startWith('')
         .map((s) => s.trim())
         .distinct()
-        .switchMap((s) => _performSearch(contactRepo, s));
-
-    final stateDistinct$ = publishValueSeededDistinct(
-      state$,
-      seedValue: HomeState(
-        (b) => b
-          ..contacts = ListBuilder<Contact>()
-          ..isLoading = true,
-      ),
-    );
+        .switchMap((s) => _performSearch(contactRepo, s))
+        .publishValueSeededDistinct(
+          seedValue: HomeState(
+            (b) => b
+              ..contacts = ListBuilder<Contact>()
+              ..isLoading = true,
+          ),
+        );
 
     final message$ = deleteController.flatMap((contact) async* {
       try {
@@ -68,9 +66,9 @@ class HomeBloc implements BaseBloc {
         await contactRepo.deleteAll();
       }).listen(null),
       message$.listen((message) => print('[HOME_BLOC] message=$message')),
-      stateDistinct$.listen((state) =>
+      state$.listen((state) =>
           print('[HOME_BLOC] state.length=${state.contacts.length}')),
-      stateDistinct$.connect(),
+      state$.connect(),
       message$.connect(),
     ];
 
@@ -78,7 +76,7 @@ class HomeBloc implements BaseBloc {
       () => deleteAllController.add(null),
       searchController.add,
       deleteController.add,
-      stateDistinct$,
+      state$,
       message$,
       () async {
         await Future.wait(subscriptions.map((s) => s.cancel()));

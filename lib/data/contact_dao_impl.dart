@@ -11,8 +11,8 @@ class ContactDaoImpl implements ContactDao {
   const ContactDaoImpl(this._briteDatabaseFuture);
 
   @override
-  Observable<List<ContactEntity>> search(String query) {
-    return Observable.fromFuture(_briteDatabaseFuture).flatMap((db) {
+  Stream<List<ContactEntity>> search(String query) {
+    return Stream.fromFuture(_briteDatabaseFuture).flatMap((db) {
       return db
           .createQuery(
             tableContacts,
@@ -30,8 +30,8 @@ class ContactDaoImpl implements ContactDao {
   }
 
   @override
-  Observable<ContactEntity> findById(int id) {
-    return Observable.fromFuture(_briteDatabaseFuture).flatMap((db) {
+  Stream<ContactEntity> findById(int id) {
+    return Stream.fromFuture(_briteDatabaseFuture).flatMap((db) {
       return db
           .createQuery(
             tableContacts,

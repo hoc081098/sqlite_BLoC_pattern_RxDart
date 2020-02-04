@@ -22,7 +22,7 @@ class _DetailPageState extends State<DetailPage> {
   double _scale;
   double _top;
 
-  calculateScaleAndTop() {
+  void calculateScaleAndTop() {
     final defaultTopMargin = 256.0 - 23.0;
     final startScale = 96.0;
     final endScale = startScale / 2;
@@ -195,17 +195,17 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  _call(String phone) async {
+  void _call(String phone) async {
     final url = 'tel:$phone';
     if (await canLaunch(url)) {
-      launch(url);
+      await launch(url);
     }
   }
 
-  _sms(String phone) async {
+  void _sms(String phone) async {
     final url = 'sms:$phone';
     if (await canLaunch(url)) {
-      launch(url);
+      await launch(url);
     }
   }
 }

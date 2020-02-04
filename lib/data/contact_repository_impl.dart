@@ -1,4 +1,3 @@
-import 'package:rxdart/rxdart.dart';
 import 'package:sqlite_bloc_rxdart/data/contact_dao.dart';
 import 'package:sqlite_bloc_rxdart/data/contact_entity.dart';
 import 'package:sqlite_bloc_rxdart/domain/contact.dart';
@@ -10,14 +9,14 @@ class ContactRepositoryImpl implements ContactRepository {
   const ContactRepositoryImpl(this._contactDao);
 
   @override
-  Observable<List<Contact>> search({String query = ''}) {
+  Stream<List<Contact>> search({String query = ''}) {
     return _contactDao.search(query).map((entites) {
       return entites.map(_toContact).toList(growable: false);
     });
   }
 
   @override
-  Observable<Contact> getContactById(int id) {
+  Stream<Contact> getContactById(int id) {
     return _contactDao.findById(id).map(_toContact);
   }
 

@@ -1,11 +1,11 @@
-import 'package:distinct_value_connectable_observable/distinct_value_connectable_observable.dart';
+import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sqlite_bloc_rxdart/domain/contact.dart';
 import 'package:sqlite_bloc_rxdart/domain/contact_repository.dart';
 
 class DetailBloc implements BaseBloc {
-  final ValueObservable<Contact> contact$;
+  final ValueStream<Contact> contact$;
 
   final void Function() _dispose;
 
@@ -24,19 +24,17 @@ class DetailBloc implements BaseBloc {
     assert(contactRepo != null, 'contactRepo cannot be null');
     assert(initial != null, 'initial cannot be null');
 
-    final contactDistinct$ = publishValueSeededDistinct(
-      contactRepo.getContactById(initial.id),
-      seedValue: initial,
-    );
+    final contact$ = contactRepo
+        .getContactById(initial.id)
+        .publishValueSeededDistinct(seedValue: initial);
 
     final subscriptions = [
-      contactDistinct$
-          .listen((contact) => print('[DETAIL_BLOC] contact=$contact')),
-      contactDistinct$.connect(),
+      contact$.listen((contact) => print('[DETAIL_BLOC] contact=$contact')),
+      contact$.connect(),
     ];
 
     return DetailBloc._(
-      contactDistinct$,
+      contact$,
       () async {
         await Future.wait(subscriptions.map((s) => s.cancel()));
         print('[DETAIL_BLOC] disposed id=${initial.id}');

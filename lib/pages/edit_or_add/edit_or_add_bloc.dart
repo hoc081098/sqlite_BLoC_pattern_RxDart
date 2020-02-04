@@ -23,7 +23,7 @@ class EditOrAddBloc implements BaseBloc {
   final Stream<NameError> nameError$;
   final Stream<PhoneError> phoneError$;
   final Stream<AddressError> addressError$;
-  final ValueObservable<Gender> gender$;
+  final ValueStream<Gender> gender$;
   final Stream<bool> isLoading$;
   final Stream<EditOrAddMessage> message$;
 
@@ -101,7 +101,7 @@ class EditOrAddBloc implements BaseBloc {
 
     final submit$ = submitController
         .withLatestFrom(
-          Observable.combineLatest(
+          Rx.combineLatest(
             [
               nameError$,
               phoneError$,
@@ -113,7 +113,7 @@ class EditOrAddBloc implements BaseBloc {
         )
         .share();
 
-    final message$ = Observable.merge([
+    final message$ = Rx.merge([
       submit$
           .where((isValid) => !isValid)
           .map((_) => const InvalidInformation()),

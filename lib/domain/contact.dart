@@ -16,7 +16,7 @@ abstract class Contact implements Built<Contact, ContactBuilder> {
 
   Contact._();
 
-  factory Contact([updates(ContactBuilder b)]) = _$Contact;
+  factory Contact([Function(ContactBuilder b) updates]) = _$Contact;
 }
 
 class Gender extends EnumClass {

@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   StreamSubscription<HomeMessage> _subscription;
 
-  _handleMessage(HomeMessage message) async {
+  void _handleMessage(HomeMessage message) async {
     if (message is DeleteContactSuccess) {
       showSnackBar(
         _scaffoldKey?.currentState,
@@ -201,6 +201,7 @@ class _HomePageState extends State<HomePage> {
 class HomeAppBar extends StatefulWidget {
   const HomeAppBar({Key key}) : super(key: key);
 
+  @override
   _HomeAppBarState createState() => _HomeAppBarState();
 }
 

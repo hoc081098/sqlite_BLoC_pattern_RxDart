@@ -1,6 +1,6 @@
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:sqlbrite/sqlbrite.dart';
 import 'package:sqlite_bloc_rxdart/data/contact_dao.dart';
 import 'package:sqlite_bloc_rxdart/data/contact_dao_impl.dart';
@@ -11,6 +11,7 @@ const dbName = 'flutter_sqlite_bloc_rxdart.db';
 
 class AppDatabase {
   static Database _db;
+
   static Future<Database> get _dbFuture async => _db ??= await _open();
 
   final ContactDao contactDao;
@@ -20,7 +21,7 @@ class AppDatabase {
 
   static Future<Database> _open() async {
     final directory = await getApplicationDocumentsDirectory();
-    String path = join(directory.path, dbName);
+    final path = join(directory.path, dbName);
     return await openDatabase(
       path,
       version: 1,
@@ -37,7 +38,7 @@ class AppDatabase {
         )''');
 
         final batch = db.batch();
-        for (int i = 0; i < 200; i++) {
+        for (var i = 0; i < 200; i++) {
           batch.insert(
             tableContacts,
             ContactEntity(

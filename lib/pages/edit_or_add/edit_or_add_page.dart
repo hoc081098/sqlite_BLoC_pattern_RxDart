@@ -151,7 +151,7 @@ class _EditOrAddPageState extends State<EditOrAddPage>
     final nameTextField = StreamBuilder<NameError>(
       stream: bloc.nameError$,
       builder: (context, snapshot) {
-        getErrorText(NameError nameError) {
+        String getErrorText(NameError nameError) {
           if (nameError is LengthOfNameIsLessThanThreeCharacters) {
             return 'At least 3 characters';
           }
@@ -187,7 +187,7 @@ class _EditOrAddPageState extends State<EditOrAddPage>
     final phoneTextField = StreamBuilder<PhoneError>(
       stream: bloc.phoneError$,
       builder: (context, snapshot) {
-        getErrorText(PhoneError phoneError) {
+        String getErrorText(PhoneError phoneError) {
           if (phoneError is InvalidPhoneNumber) {
             return 'Invalid phone number';
           }
@@ -224,7 +224,7 @@ class _EditOrAddPageState extends State<EditOrAddPage>
     final addressTextField = StreamBuilder<AddressError>(
       stream: bloc.addressError$,
       builder: (context, snapshot) {
-        getErrorText(AddressError addressError) {
+        String getErrorText(AddressError addressError) {
           if (addressError is LengthOfAddressIsLessThanThreeCharacters) {
             return 'At least 3 characters';
           }

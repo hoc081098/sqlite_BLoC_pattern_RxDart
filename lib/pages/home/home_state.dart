@@ -14,9 +14,8 @@ abstract class HomeState implements Built<HomeState, HomeStateBuilder> {
 
   HomeState._();
 
-  factory HomeState([updates(HomeStateBuilder b)]) = _$HomeState;
+  factory HomeState([Function(HomeStateBuilder b) updates]) = _$HomeState;
 }
-
 
 @immutable
 abstract class HomeMessage {}
