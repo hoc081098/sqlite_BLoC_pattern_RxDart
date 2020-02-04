@@ -28,16 +28,10 @@ class _HomePageState extends State<HomePage> {
 
   void _handleMessage(HomeMessage message) async {
     if (message is DeleteContactSuccess) {
-      showSnackBar(
-        _scaffoldKey?.currentState,
-        'Delete contact successfully',
-      );
+      _scaffoldKey.snackBar('Delete contact successfully');
     }
     if (message is DeleteContactFailure) {
-      showSnackBar(
-        _scaffoldKey?.currentState,
-        'Delete contact not successfully',
-      );
+      _scaffoldKey.snackBar('Delete contact not successfully');
     }
   }
 

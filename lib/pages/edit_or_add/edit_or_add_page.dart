@@ -95,37 +95,20 @@ class _EditOrAddPageState extends State<EditOrAddPage>
     });
     _subscriptionMessage ??=
         BlocProvider.of<EditOrAddBloc>(context).message$.listen((message) {
-      final scaffoldState = _scaffoldKey?.currentState;
-
       if (message is InvalidInformation) {
-        showSnackBar(
-          scaffoldState,
-          'Invalid information',
-        );
+        _scaffoldKey.snackBar('Invalid information');
       }
       if (message is AddContactSuccess) {
-        showSnackBar(
-          scaffoldState,
-          'Add contact successfully',
-        );
+        _scaffoldKey.snackBar('Add contact successfully');
       }
       if (message is AddContactFailure) {
-        showSnackBar(
-          scaffoldState,
-          'Add contact not successfully',
-        );
+        _scaffoldKey.snackBar('Add contact not successfully');
       }
       if (message is UpdateContactSuccess) {
-        showSnackBar(
-          scaffoldState,
-          'Update contact successfully',
-        );
+        _scaffoldKey.snackBar('Update contact successfully');
       }
       if (message is UpdateContactFailure) {
-        showSnackBar(
-          scaffoldState,
-          'Update contact not successfully',
-        );
+        _scaffoldKey.snackBar('Update contact not successfully');
       }
     });
     super.didChangeDependencies();
