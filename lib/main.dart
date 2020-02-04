@@ -7,6 +7,8 @@ import 'data/local/app_database.dart';
 import 'domain/contact_repository.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   final appDatabase = AppDatabase();
   final ContactRepository contactRepository = ContactRepositoryImpl(
     appDatabase.contactDao,
