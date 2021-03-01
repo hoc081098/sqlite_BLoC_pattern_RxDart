@@ -6,7 +6,6 @@ import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:flutter_provider/flutter_provider.dart';
 
 import '../../domain/contact.dart';
-import '../../domain/contact_repository.dart';
 import '../../utils.dart';
 import '../detail/detail_bloc.dart';
 import '../detail/detail_page.dart';
@@ -51,6 +50,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<HomeBloc>(context);
+    final listPadding = MediaQuery.of(context).padding.copyWith(
+          left: 0.0,
+          right: 0.0,
+          top: 0.0,
+        );
 
     return Scaffold(
       key: _scaffoldKey,
@@ -61,9 +65,9 @@ class _HomePageState extends State<HomePage> {
             MaterialPageRoute(
               builder: (context) {
                 return BlocProvider<EditOrAddBloc>(
-                  initBloc: () {
+                  initBloc: (context) {
                     return EditOrAddBloc(
-                      Provider.of<ContactRepository>(context),
+                      context.get(),
                       true,
                     );
                   },
@@ -83,12 +87,9 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           const HomeAppBar(),
           Expanded(
-            child: StreamBuilder<HomeState>(
+            child: RxStreamBuilder<HomeState>(
               stream: bloc.state$,
-              initialData: bloc.state$.value,
-              builder: (context, snapshot) {
-                final state = snapshot.data;
-
+              builder: (context, state) {
                 if (state.isLoading) {
                   return Center(
                     child: CircularProgressIndicator(),
@@ -106,6 +107,7 @@ class _HomePageState extends State<HomePage> {
                       child: ListView.builder(
                         itemCount: state.contacts.length,
                         physics: const BouncingScrollPhysics(),
+                        padding: listPadding,
                         itemBuilder: (BuildContext context, int index) {
                           final contact = state.contacts[index];
 
@@ -116,10 +118,9 @@ class _HomePageState extends State<HomePage> {
                                 MaterialPageRoute(
                                   builder: (context) {
                                     return BlocProvider<DetailBloc>(
-                                      initBloc: () {
+                                      initBloc: (context) {
                                         return DetailBloc(
-                                          Provider.of<ContactRepository>(
-                                              context),
+                                          context.get(),
                                           contact,
                                         );
                                       },
@@ -170,13 +171,13 @@ class _HomePageState extends State<HomePage> {
           title: Text('Delete contact'),
           content: Text('Are you sure you want to delete this contact?'),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(true);
@@ -213,7 +214,7 @@ class _HomeAppBarState extends State<HomeAppBar> with TickerProviderStateMixin {
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 500),
     );
     _opacityTextField = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
@@ -308,13 +309,13 @@ class _HomeAppBarState extends State<HomeAppBar> with TickerProviderStateMixin {
           content: Text(
               'Are you sure you want to delete all contacts? This action cannot be undone'),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop(true);

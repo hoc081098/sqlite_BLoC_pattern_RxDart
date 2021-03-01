@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -16,7 +17,8 @@ class AppDatabase {
   AppDatabase._(this.contactDao);
 
   factory AppDatabase() {
-    final _dbFuture = _open().then((db) => BriteDatabase(db));
+    final _dbFuture = _open()
+        .then((db) => BriteDatabase(db, logger: kReleaseMode ? null : print));
     return AppDatabase._(ContactDaoImpl(_dbFuture));
   }
 

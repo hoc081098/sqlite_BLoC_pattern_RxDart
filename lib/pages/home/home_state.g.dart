@@ -18,12 +18,8 @@ class _$HomeState extends HomeState {
       (new HomeStateBuilder()..update(updates)).build();
 
   _$HomeState._({this.contacts, this.isLoading, this.error}) : super._() {
-    if (contacts == null) {
-      throw new BuiltValueNullFieldError('HomeState', 'contacts');
-    }
-    if (isLoading == null) {
-      throw new BuiltValueNullFieldError('HomeState', 'isLoading');
-    }
+    BuiltValueNullFieldError.checkNotNull(contacts, 'HomeState', 'contacts');
+    BuiltValueNullFieldError.checkNotNull(isLoading, 'HomeState', 'isLoading');
   }
 
   @override
@@ -77,10 +73,11 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
   HomeStateBuilder();
 
   HomeStateBuilder get _$this {
-    if (_$v != null) {
-      _contacts = _$v.contacts?.toBuilder();
-      _isLoading = _$v.isLoading;
-      _error = _$v.error;
+    final $v = _$v;
+    if ($v != null) {
+      _contacts = $v.contacts.toBuilder();
+      _isLoading = $v.isLoading;
+      _error = $v.error;
       _$v = null;
     }
     return this;
@@ -88,9 +85,7 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
 
   @override
   void replace(HomeState other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$HomeState;
   }
 
@@ -105,7 +100,10 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
     try {
       _$result = _$v ??
           new _$HomeState._(
-              contacts: contacts.build(), isLoading: isLoading, error: error);
+              contacts: contacts.build(),
+              isLoading: BuiltValueNullFieldError.checkNotNull(
+                  isLoading, 'HomeState', 'isLoading'),
+              error: error);
     } catch (_) {
       String _$failedField;
       try {

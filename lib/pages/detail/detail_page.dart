@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../domain/contact.dart';
-import '../../domain/contact_repository.dart';
 import '../edit_or_add/edit_or_add_bloc.dart';
 import '../edit_or_add/edit_or_add_page.dart';
 import 'detail_bloc.dart';
@@ -67,39 +66,38 @@ class _DetailPageState extends State<DetailPage> {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: StreamBuilder<Contact>(
-          stream: bloc.contact$,
-          initialData: bloc.contact$.value,
-          builder: (context, snapshot) {
-            final contact = snapshot.data;
-
-            return Stack(
-              children: <Widget>[
-                CustomScrollView(
-                  controller: scrollController,
-                  slivers: <Widget>[
-                    SliverAppBar(
-                      expandedHeight: 240,
-                      pinned: true,
-                      flexibleSpace: FlexibleSpaceBar(
-                        title: Text(contact.name),
-                        background: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: <Color>[
-                                Theme.of(context).accentColor,
-                                Theme.of(context).primaryColor,
-                              ],
-                              begin: AlignmentDirectional.topStart,
-                              end: AlignmentDirectional.bottomEnd,
-                            ),
+      body: RxStreamBuilder<Contact>(
+        stream: bloc.contact$,
+        builder: (context, contact) {
+          return Stack(
+            children: <Widget>[
+              CustomScrollView(
+                controller: scrollController,
+                slivers: <Widget>[
+                  SliverAppBar(
+                    expandedHeight: 240,
+                    pinned: true,
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: Text(
+                          contact == null ? 'Does not exists' : contact.name),
+                      background: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: <Color>[
+                              Theme.of(context).accentColor,
+                              Theme.of(context).primaryColor,
+                            ],
+                            begin: AlignmentDirectional.topStart,
+                            end: AlignmentDirectional.bottomEnd,
                           ),
                         ),
                       ),
                     ),
-                    _buildDetailContent(contact, height),
-                  ],
-                ),
+                  ),
+                  if (contact != null) _buildDetailContent(contact, height),
+                ],
+              ),
+              if (contact != null)
                 Positioned(
                   child: Transform.scale(
                     scale: _scale,
@@ -111,9 +109,9 @@ class _DetailPageState extends State<DetailPage> {
                           MaterialPageRoute(
                             builder: (context) {
                               return BlocProvider<EditOrAddBloc>(
-                                initBloc: () {
+                                initBloc: (context) {
                                   return EditOrAddBloc(
-                                    Provider.of<ContactRepository>(context),
+                                    context.get(),
                                     false,
                                     contact: contact,
                                   );
@@ -133,9 +131,10 @@ class _DetailPageState extends State<DetailPage> {
                   top: _top,
                   right: 16.0,
                 ),
-              ],
-            );
-          }),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -172,7 +171,9 @@ class _DetailPageState extends State<DetailPage> {
             subtitle: Text(
               contact.gender == Gender.male
                   ? 'Male'
-                  : contact.gender == Gender.female ? 'Female' : '???',
+                  : contact.gender == Gender.female
+                      ? 'Female'
+                      : '???',
             ),
           ),
           ListTile(

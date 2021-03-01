@@ -1,22 +1,18 @@
+import 'package:disposebag/disposebag.dart';
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 import '../../domain/contact.dart';
 import '../../domain/contact_repository.dart';
 
-class DetailBloc implements BaseBloc {
-  final ValueStream<Contact> contact$;
-
-  final void Function() _dispose;
+class DetailBloc extends DisposeCallbackBaseBloc {
+  final DistinctValueStream<Contact> contact$;
 
   DetailBloc._(
     this.contact$,
-    this._dispose,
-  );
-
-  @override
-  void dispose() => _dispose();
+    Func0<void> dispose,
+  ) : super(dispose);
 
   factory DetailBloc(
     final ContactRepository contactRepo,
@@ -25,21 +21,14 @@ class DetailBloc implements BaseBloc {
     assert(contactRepo != null, 'contactRepo cannot be null');
     assert(initial != null, 'initial cannot be null');
 
-    final contact$ = contactRepo
-        .getContactById(initial.id)
-        .publishValueSeededDistinct(seedValue: initial);
+    final contact$ =
+        contactRepo.getContactById(initial.id).publishValueDistinct(initial);
 
-    final subscriptions = [
-      contact$.listen((contact) => print('[DETAIL_BLOC] contact=$contact')),
+    final bag = DisposeBag([
+      contact$.debug(identifier: '[DETAIL_BLOC] contact').collect(),
       contact$.connect(),
-    ];
+    ], 'DetailBloc');
 
-    return DetailBloc._(
-      contact$,
-      () async {
-        await Future.wait(subscriptions.map((s) => s.cancel()));
-        print('[DETAIL_BLOC] disposed id=${initial.id}');
-      },
-    );
+    return DetailBloc._(contact$, bag.dispose);
   }
 }

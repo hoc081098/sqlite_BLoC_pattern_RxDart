@@ -40,7 +40,7 @@ class ContactDaoImpl implements ContactDao {
             whereArgs: [id],
             limit: 1,
           )
-          .mapToOne((row) => ContactEntity.fromJson(row));
+          .mapToOneOrDefault((row) => ContactEntity.fromJson(row), null);
     });
   }
 

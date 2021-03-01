@@ -1,6 +1,8 @@
+import 'package:disposebag/disposebag.dart';
 import 'package:distinct_value_connectable_stream/distinct_value_connectable_stream.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 import '../../domain/contact.dart';
 import '../../domain/contact_repository.dart';
@@ -8,15 +10,13 @@ import 'home_state.dart';
 
 // ignore_for_file: close_sinks
 
-class HomeBloc implements BaseBloc {
-  final void Function(String) search;
-  final void Function(Contact) delete;
-  final void Function() deleteAll;
+class HomeBloc extends DisposeCallbackBaseBloc {
+  final Func1<String, void> search;
+  final Func1<Contact, void> delete;
+  final Func0<void> deleteAll;
 
-  final ValueStream<HomeState> state$;
+  final DistinctValueStream<HomeState> state$;
   final Stream<HomeMessage> message$;
-
-  final void Function() _dispose;
 
   HomeBloc._(
     this.deleteAll,
@@ -24,11 +24,8 @@ class HomeBloc implements BaseBloc {
     this.delete,
     this.state$,
     this.message$,
-    this._dispose,
-  );
-
-  @override
-  void dispose() => _dispose();
+    Func0<void> dispose,
+  ) : super(dispose);
 
   factory HomeBloc(final ContactRepository contactRepo) {
     final searchController = PublishSubject<String>();
@@ -41,32 +38,32 @@ class HomeBloc implements BaseBloc {
         .map((s) => s.trim())
         .distinct()
         .switchMap((s) => _performSearch(contactRepo, s))
-        .publishValueSeededDistinct(
-          seedValue: HomeState((b) => b..isLoading = true),
-        );
+        .publishValueDistinct(HomeState((b) => b..isLoading = true));
 
-    final message$ = deleteController.flatMap((contact) async* {
-      try {
-        yield await contactRepo.delete(contact);
-      } catch (_) {
-        yield false;
-      }
-    }).map((success) {
-      return success
-          ? const DeleteContactSuccess()
-          : const DeleteContactFailure();
-    }).publish();
+    final message$ = deleteController
+        .flatMap((contact) => Rx.fromCallable(() => contactRepo.delete(contact))
+            .onErrorReturn(false))
+        .map((success) => success
+            ? const DeleteContactSuccess()
+            : const DeleteContactFailure())
+        .publish();
 
-    final subscriptions = [
-      deleteAllController.exhaustMap((_) async* {
-        await contactRepo.deleteAll();
-      }).listen(null),
-      message$.listen((message) => print('[HOME_BLOC] message=$message')),
-      state$.listen((state) =>
-          print('[HOME_BLOC] state.length=${state.contacts.length}')),
-      state$.connect(),
+    final bag = DisposeBag([
+      deleteAllController
+          .exhaustMap((_) => Rx.fromCallable(contactRepo.deleteAll))
+          .debug(identifier: '[HOME_BLOC] deteteAll')
+          .collect(),
+      //
+      message$.debug(identifier: '[HOME_BLOC] message').collect(),
       message$.connect(),
-    ];
+      //
+      state$.debug(identifier: '[HOME_BLOC] state').collect(),
+      state$.connect(),
+      //
+      deleteAllController,
+      searchController,
+      deleteController,
+    ], 'HomeBloc');
 
     return HomeBloc._(
       () => deleteAllController.add(null),
@@ -74,15 +71,7 @@ class HomeBloc implements BaseBloc {
       deleteController.add,
       state$,
       message$,
-      () async {
-        await Future.wait(subscriptions.map((s) => s.cancel()));
-        await Future.wait([
-          deleteAllController,
-          searchController,
-          deleteController,
-        ].map((c) => c.close()));
-        print('[HOME_BLOC] disposed');
-      },
+      bag.dispose,
     );
   }
 

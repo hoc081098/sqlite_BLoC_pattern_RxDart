@@ -1,33 +1,36 @@
 name: sqlite_bloc_rxdart
 description: sqlite BLoC rxdart.
 version: 1.0.0+1
+publish_to: none
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: '>=2.9.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^0.1.2
-  built_value: ^7.0.8
-  path_provider: ^1.6.0
-  intl: ^0.16.1
-  url_launcher: ^5.4.1
+  cupertino_icons: ^1.0.2
+  built_value: ^8.0.0
+  path_provider: ^2.0.0
+  intl: ^0.17.0
+  url_launcher: ^6.0.1
 
-  distinct_value_connectable_stream: ^1.0.3+1
-  sqlbrite: ^1.2.0
-  flutter_provider: ^1.1.1
-  flutter_bloc_pattern: ^1.1.0
+  disposebag: ^1.5.0-nullsafety.1
+  flutter_disposebag: ^1.1.0-nullsafety.1
+  distinct_value_connectable_stream: ^1.2.0-nullsafety.5
+  sqlbrite: ^2.0.0-nullsafety.0
+  flutter_provider: ^2.0.0
+  flutter_bloc_pattern: ^2.0.0-nullsafety.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  built_value_generator: ^7.0.8
-  build_runner: ^1.7.3
-  pedantic: 1.8.0+1
+  build_runner: ^1.11.5
+  built_value_generator: ^8.0.0
+  pedantic: ^1.10.0
 
 dependency_overrides:
-  pedantic: 1.9.0
+  analyzer: ^1.1.0
 
 flutter:
   uses-material-design: true

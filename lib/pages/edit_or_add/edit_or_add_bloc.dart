@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:disposebag/disposebag.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:rxdart_ext/rxdart_ext.dart';
 
 import '../../domain/contact.dart';
 import '../../domain/contact_repository.dart';
@@ -14,12 +16,12 @@ bool _isValidPhone(String phone) {
   return RegExp(_phoneRegExpString, caseSensitive: false).hasMatch(phone);
 }
 
-class EditOrAddBloc implements BaseBloc {
-  final void Function(String) nameChanged;
-  final void Function(String) phoneChanged;
-  final void Function(String) addressChanged;
-  final void Function(Gender) genderChanged;
-  final void Function() submit;
+class EditOrAddBloc extends DisposeCallbackBaseBloc {
+  final Func1<String, void> nameChanged;
+  final Func1<String, void> phoneChanged;
+  final Func1<String, void> addressChanged;
+  final Func1<Gender, void> genderChanged;
+  final Func0<void> submit;
 
   final Stream<NameError> nameError$;
   final Stream<PhoneError> phoneError$;
@@ -28,10 +30,8 @@ class EditOrAddBloc implements BaseBloc {
   final Stream<bool> isLoading$;
   final Stream<EditOrAddMessage> message$;
 
-  final void Function() _dispose;
-
   EditOrAddBloc._(
-    this._dispose, {
+    Func0<void> dispose, {
     @required this.nameChanged,
     @required this.phoneChanged,
     @required this.addressChanged,
@@ -43,10 +43,7 @@ class EditOrAddBloc implements BaseBloc {
     @required this.gender$,
     @required this.isLoading$,
     @required this.message$,
-  });
-
-  @override
-  void dispose() => _dispose();
+  }) : super(dispose);
 
   factory EditOrAddBloc(
     final ContactRepository contactRepo,
@@ -69,15 +66,6 @@ class EditOrAddBloc implements BaseBloc {
         BehaviorSubject<Gender>.seeded(contact?.gender ?? Gender.male);
     final submitController = PublishSubject<void>();
     final isLoadingController = BehaviorSubject<bool>.seeded(false);
-
-    final controllers = <StreamController>[
-      nameController,
-      phoneController,
-      addressController,
-      genderController,
-      submitController,
-      isLoadingController
-    ];
 
     final nameError$ = nameController.map((name) {
       if (name.length < 3) {
@@ -132,25 +120,26 @@ class EditOrAddBloc implements BaseBloc {
               )),
     ]).publish();
 
-    final subscriptions = <StreamSubscription>[
-      nameController.listen((name) => print('[EDIT_OR_ADD_BLOC] name=$name')),
-      phoneController
-          .listen((phone) => print('[EDIT_OR_ADD_BLOC] phone=$phone')),
+    final bag = DisposeBag([
+      nameController.debug(identifier: '[EDIT_OR_ADD_BLOC] name').collect(),
+      phoneController.debug(identifier: '[EDIT_OR_ADD_BLOC] phone').collect(),
       addressController
-          .listen((address) => print('[EDIT_OR_ADD_BLOC] address=$address')),
-      genderController
-          .listen((gender) => print('[EDIT_OR_ADD_BLOC] gender=$gender')),
-      message$
-          .listen((message) => print('[EDIT_OR_ADD_BLOC] message=$message')),
+          .debug(identifier: '[EDIT_OR_ADD_BLOC] address')
+          .collect(),
+      genderController.debug(identifier: '[EDIT_OR_ADD_BLOC] gender').collect(),
+      message$.debug(identifier: '[EDIT_OR_ADD_BLOC] message').collect(),
       message$.connect(),
-    ];
+      //
+      nameController,
+      phoneController,
+      addressController,
+      genderController,
+      submitController,
+      isLoadingController,
+    ], 'EditOrAddBloc');
 
     return EditOrAddBloc._(
-      () async {
-        await Future.wait(subscriptions.map((s) => s.cancel()));
-        await Future.wait(controllers.map((c) => c.close()));
-        print('[EDIT_OR_ADD_BLOC] disposed');
-      },
+      bag.dispose,
       nameChanged: nameController.add,
       phoneChanged: phoneController.add,
       addressChanged: addressController.add,

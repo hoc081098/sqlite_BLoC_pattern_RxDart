@@ -53,21 +53,11 @@ class _$Contact extends Contact {
       this.updatedAt,
       this.createdAt})
       : super._() {
-    if (name == null) {
-      throw new BuiltValueNullFieldError('Contact', 'name');
-    }
-    if (phone == null) {
-      throw new BuiltValueNullFieldError('Contact', 'phone');
-    }
-    if (address == null) {
-      throw new BuiltValueNullFieldError('Contact', 'address');
-    }
-    if (gender == null) {
-      throw new BuiltValueNullFieldError('Contact', 'gender');
-    }
-    if (updatedAt == null) {
-      throw new BuiltValueNullFieldError('Contact', 'updatedAt');
-    }
+    BuiltValueNullFieldError.checkNotNull(name, 'Contact', 'name');
+    BuiltValueNullFieldError.checkNotNull(phone, 'Contact', 'phone');
+    BuiltValueNullFieldError.checkNotNull(address, 'Contact', 'address');
+    BuiltValueNullFieldError.checkNotNull(gender, 'Contact', 'gender');
+    BuiltValueNullFieldError.checkNotNull(updatedAt, 'Contact', 'updatedAt');
   }
 
   @override
@@ -152,14 +142,15 @@ class ContactBuilder implements Builder<Contact, ContactBuilder> {
   ContactBuilder();
 
   ContactBuilder get _$this {
-    if (_$v != null) {
-      _id = _$v.id;
-      _name = _$v.name;
-      _phone = _$v.phone;
-      _address = _$v.address;
-      _gender = _$v.gender;
-      _updatedAt = _$v.updatedAt;
-      _createdAt = _$v.createdAt;
+    final $v = _$v;
+    if ($v != null) {
+      _id = $v.id;
+      _name = $v.name;
+      _phone = $v.phone;
+      _address = $v.address;
+      _gender = $v.gender;
+      _updatedAt = $v.updatedAt;
+      _createdAt = $v.createdAt;
       _$v = null;
     }
     return this;
@@ -167,9 +158,7 @@ class ContactBuilder implements Builder<Contact, ContactBuilder> {
 
   @override
   void replace(Contact other) {
-    if (other == null) {
-      throw new ArgumentError.notNull('other');
-    }
+    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Contact;
   }
 
@@ -183,11 +172,16 @@ class ContactBuilder implements Builder<Contact, ContactBuilder> {
     final _$result = _$v ??
         new _$Contact._(
             id: id,
-            name: name,
-            phone: phone,
-            address: address,
-            gender: gender,
-            updatedAt: updatedAt,
+            name:
+                BuiltValueNullFieldError.checkNotNull(name, 'Contact', 'name'),
+            phone: BuiltValueNullFieldError.checkNotNull(
+                phone, 'Contact', 'phone'),
+            address: BuiltValueNullFieldError.checkNotNull(
+                address, 'Contact', 'address'),
+            gender: BuiltValueNullFieldError.checkNotNull(
+                gender, 'Contact', 'gender'),
+            updatedAt: BuiltValueNullFieldError.checkNotNull(
+                updatedAt, 'Contact', 'updatedAt'),
             createdAt: createdAt);
     replace(_$result);
     return _$result;

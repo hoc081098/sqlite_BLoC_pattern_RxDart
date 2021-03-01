@@ -6,11 +6,17 @@ part 'contact.g.dart';
 abstract class Contact implements Built<Contact, ContactBuilder> {
   @nullable
   int get id;
+
   String get name;
+
   String get phone;
+
   String get address;
+
   Gender get gender;
+
   DateTime get updatedAt;
+
   @nullable
   DateTime get createdAt;
 

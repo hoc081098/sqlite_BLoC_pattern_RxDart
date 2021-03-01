@@ -157,7 +157,7 @@ class _EditOrAddPageState extends State<EditOrAddPage>
           ),
           keyboardType: TextInputType.text,
           maxLines: 1,
-          autofocus: true,
+          autofocus: false,
           onChanged: bloc.nameChanged,
           textInputAction: TextInputAction.next,
           onSubmitted: (_) {
@@ -194,7 +194,7 @@ class _EditOrAddPageState extends State<EditOrAddPage>
           ),
           keyboardType: TextInputType.text,
           maxLines: 1,
-          autofocus: true,
+          autofocus: false,
           onChanged: bloc.phoneChanged,
           textInputAction: TextInputAction.next,
           onSubmitted: (_) {
@@ -231,7 +231,7 @@ class _EditOrAddPageState extends State<EditOrAddPage>
           ),
           keyboardType: TextInputType.text,
           maxLines: 1,
-          autofocus: true,
+          autofocus: false,
           onChanged: bloc.addressChanged,
           textInputAction: TextInputAction.next,
           style: TextStyle(fontSize: 16.0),
@@ -275,16 +275,15 @@ class _EditOrAddPageState extends State<EditOrAddPage>
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
-                  child: StreamBuilder<Gender>(
+                  child: RxStreamBuilder<Gender>(
                     stream: bloc.gender$,
-                    initialData: bloc.gender$.value,
-                    builder: (context, snapshot) {
+                    builder: (context, data) {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Radio<Gender>(
                             value: Gender.male,
-                            groupValue: snapshot.data,
+                            groupValue: data,
                             onChanged: bloc.genderChanged,
                           ),
                           Text(
@@ -295,7 +294,7 @@ class _EditOrAddPageState extends State<EditOrAddPage>
                           ),
                           Radio<Gender>(
                             value: Gender.female,
-                            groupValue: snapshot.data,
+                            groupValue: data,
                             onChanged: bloc.genderChanged,
                           ),
                           Text(
