@@ -1,6 +1,10 @@
 # sqlite_bloc_rxdart
 
-sqlite BLoC rxdart
+🍂 ❤️ CRUD + sqflite + sqlbrite + BLoC + RxDart + Clean code + Functional_Reactive_Programming 🌀 ❤️
+
+ - [sqflite](https://pub.dev/packages/sqflite) + [sqlbrite](https://pub.dev/packages/sqlbrite)
+ - [BLoC pattern](https://pub.dev/packages/flutter_bloc_pattern)
+ - [rxdart](https://pub.dev/packages/rxdart)
 
 # Screenshots
 
