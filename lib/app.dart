@@ -6,7 +6,7 @@ import 'pages/home/home_bloc.dart';
 import 'pages/home/home_page.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

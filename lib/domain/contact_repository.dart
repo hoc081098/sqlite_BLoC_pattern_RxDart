@@ -1,9 +1,11 @@
+import 'package:built_collection/built_collection.dart';
+
 import 'contact.dart';
 
 abstract class ContactRepository {
-  Stream<List<Contact>> search({String query = ''});
+  Stream<BuiltList<Contact>> search({required String by});
 
-  Stream<Contact> getContactById(int id);
+  Stream<Contact?> getContactById(int id);
 
   Future<bool> delete(Contact contact);
 

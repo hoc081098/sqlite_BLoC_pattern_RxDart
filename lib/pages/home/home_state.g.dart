@@ -12,12 +12,13 @@ class _$HomeState extends HomeState {
   @override
   final bool isLoading;
   @override
-  final Object error;
+  final Object? error;
 
-  factory _$HomeState([void Function(HomeStateBuilder) updates]) =>
+  factory _$HomeState([void Function(HomeStateBuilder)? updates]) =>
       (new HomeStateBuilder()..update(updates)).build();
 
-  _$HomeState._({this.contacts, this.isLoading, this.error}) : super._() {
+  _$HomeState._({required this.contacts, required this.isLoading, this.error})
+      : super._() {
     BuiltValueNullFieldError.checkNotNull(contacts, 'HomeState', 'contacts');
     BuiltValueNullFieldError.checkNotNull(isLoading, 'HomeState', 'isLoading');
   }
@@ -55,20 +56,20 @@ class _$HomeState extends HomeState {
 }
 
 class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
-  _$HomeState _$v;
+  _$HomeState? _$v;
 
-  ListBuilder<Contact> _contacts;
+  ListBuilder<Contact>? _contacts;
   ListBuilder<Contact> get contacts =>
       _$this._contacts ??= new ListBuilder<Contact>();
-  set contacts(ListBuilder<Contact> contacts) => _$this._contacts = contacts;
+  set contacts(ListBuilder<Contact>? contacts) => _$this._contacts = contacts;
 
-  bool _isLoading;
-  bool get isLoading => _$this._isLoading;
-  set isLoading(bool isLoading) => _$this._isLoading = isLoading;
+  bool? _isLoading;
+  bool? get isLoading => _$this._isLoading;
+  set isLoading(bool? isLoading) => _$this._isLoading = isLoading;
 
-  Object _error;
-  Object get error => _$this._error;
-  set error(Object error) => _$this._error = error;
+  Object? _error;
+  Object? get error => _$this._error;
+  set error(Object? error) => _$this._error = error;
 
   HomeStateBuilder();
 
@@ -90,7 +91,7 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
   }
 
   @override
-  void update(void Function(HomeStateBuilder) updates) {
+  void update(void Function(HomeStateBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
@@ -105,7 +106,7 @@ class HomeStateBuilder implements Builder<HomeState, HomeStateBuilder> {
                   isLoading, 'HomeState', 'isLoading'),
               error: error);
     } catch (_) {
-      String _$failedField;
+      late String _$failedField;
       try {
         _$failedField = 'contacts';
         contacts.build();

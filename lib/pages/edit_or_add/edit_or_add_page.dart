@@ -11,15 +11,14 @@ import 'edit_or_add_bloc.dart';
 import 'edit_or_add_state.dart';
 
 class EditOrAddPage extends StatefulWidget {
-  final Contact contact;
+  final Contact? contact;
   final bool addMode;
 
   const EditOrAddPage({
-    Key key,
-    @required this.addMode,
+    Key? key,
+    required this.addMode,
     this.contact,
-  })  : assert(addMode != null),
-        assert(addMode || contact != null),
+  })  : assert(addMode || contact != null),
         super(key: key);
 
   @override
@@ -30,21 +29,21 @@ class _EditOrAddPageState extends State<EditOrAddPage>
     with TickerProviderStateMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  StreamSubscription<EditOrAddMessage> _subscriptionMessage;
-  StreamSubscription<bool> _subscriptionIsLoading;
+  StreamSubscription<EditOrAddMessage>? _subscriptionMessage;
+  StreamSubscription<bool>? _subscriptionIsLoading;
 
-  AnimationController _fadeController;
-  Animation<double> _fadeAnim;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnim;
 
-  FocusNode _phoneFocusNode;
-  FocusNode _addressFocusNode;
+  late FocusNode _phoneFocusNode;
+  late FocusNode _addressFocusNode;
 
-  TextEditingController _nameTextEditingController;
-  TextEditingController _phoneTextEditingController;
-  TextEditingController _addressTextEditingController;
+  late TextEditingController _nameTextEditingController;
+  late TextEditingController _phoneTextEditingController;
+  late TextEditingController _addressTextEditingController;
 
-  AnimationController _logoAnimController;
-  Animation<double> _turns;
+  late AnimationController _logoAnimController;
+  late Animation<double> _turns;
 
   @override
   void initState() {
@@ -132,10 +131,10 @@ class _EditOrAddPageState extends State<EditOrAddPage>
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<EditOrAddBloc>(context);
 
-    final nameTextField = StreamBuilder<NameError>(
+    final nameTextField = StreamBuilder<NameError?>(
       stream: bloc.nameError$,
       builder: (context, snapshot) {
-        String getErrorText(NameError nameError) {
+        String? getErrorText(NameError? nameError) {
           if (nameError is LengthOfNameIsLessThanThreeCharacters) {
             return 'At least 3 characters';
           }
@@ -168,10 +167,10 @@ class _EditOrAddPageState extends State<EditOrAddPage>
       },
     );
 
-    final phoneTextField = StreamBuilder<PhoneError>(
+    final phoneTextField = StreamBuilder<PhoneError?>(
       stream: bloc.phoneError$,
       builder: (context, snapshot) {
-        String getErrorText(PhoneError phoneError) {
+        String? getErrorText(PhoneError? phoneError) {
           if (phoneError is InvalidPhoneNumber) {
             return 'Invalid phone number';
           }
@@ -205,10 +204,10 @@ class _EditOrAddPageState extends State<EditOrAddPage>
       },
     );
 
-    final addressTextField = StreamBuilder<AddressError>(
+    final addressTextField = StreamBuilder<AddressError?>(
       stream: bloc.addressError$,
       builder: (context, snapshot) {
-        String getErrorText(AddressError addressError) {
+        String? getErrorText(AddressError? addressError) {
           if (addressError is LengthOfAddressIsLessThanThreeCharacters) {
             return 'At least 3 characters';
           }
