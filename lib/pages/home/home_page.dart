@@ -15,7 +15,7 @@ import 'home_bloc.dart';
 import 'home_state.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -23,7 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-  StreamSubscription<HomeMessage> _subscription;
+  StreamSubscription<HomeMessage>? _subscription;
 
   void _handleMessage(HomeMessage message) async {
     if (message is DeleteContactSuccess) {
@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _subscription.cancel();
+    _subscription?.cancel();
     super.dispose();
   }
 
@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> {
           left: 0.0,
           right: 0.0,
           top: 0.0,
+          bottom: 56 + 16,
         );
 
     return Scaffold(
@@ -90,7 +91,7 @@ class _HomePageState extends State<HomePage> {
             child: RxStreamBuilder<HomeState>(
               stream: bloc.state$,
               builder: (context, state) {
-                if (state.isLoading) {
+                if (state!.isLoading) {
                   return Center(
                     child: CircularProgressIndicator(),
                   );
@@ -99,57 +100,69 @@ class _HomePageState extends State<HomePage> {
                     return Center(
                       child: Text(
                         'Error occurred: ${state.error}',
+                        style: Theme.of(context).textTheme.headline6,
                       ),
                     );
                   } else {
+                    if (state.contacts.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'Empty list',
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                      );
+                    }
+
                     return Container(
                       constraints: BoxConstraints.expand(),
-                      child: ListView.builder(
-                        itemCount: state.contacts.length,
-                        physics: const BouncingScrollPhysics(),
-                        padding: listPadding,
-                        itemBuilder: (BuildContext context, int index) {
-                          final contact = state.contacts[index];
+                      child: Scrollbar(
+                        child: ListView.builder(
+                          itemCount: state.contacts.length,
+                          physics: const BouncingScrollPhysics(),
+                          padding: listPadding,
+                          itemBuilder: (BuildContext context, int index) {
+                            final contact = state.contacts[index];
 
-                          return ListTile(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return BlocProvider<DetailBloc>(
-                                      initBloc: (context) {
-                                        return DetailBloc(
-                                          context.get(),
-                                          contact,
-                                        );
-                                      },
-                                      child: const DetailPage(),
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                            title: Text(contact.name),
-                            subtitle: Text(
-                              '${contact.phone} - ${contact.address}',
-                              maxLines: 2,
-                              overflow: TextOverflow.fade,
-                            ),
-                            isThreeLine: true,
-                            leading: CircleAvatar(
-                              child: Text(
-                                contact.name[0],
+                            return ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return BlocProvider<DetailBloc>(
+                                        initBloc: (context) {
+                                          return DetailBloc(
+                                            context.get(),
+                                            contact,
+                                          );
+                                        },
+                                        child: const DetailPage(),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              title: Text(contact.name),
+                              subtitle: Text(
+                                '${contact.phone} - ${contact.address}',
+                                maxLines: 2,
+                                overflow: TextOverflow.fade,
                               ),
-                              foregroundColor: Colors.white,
-                            ),
-                            trailing: IconButton(
-                              icon: Icon(Icons.remove_circle),
-                              onPressed: () =>
-                                  _showDialogDeleteContact(bloc, contact),
-                            ),
-                          );
-                        },
+                              isThreeLine: false,
+                              leading: CircleAvatar(
+                                child: Text(
+                                  contact.name[0],
+                                ),
+                                foregroundColor: Colors.white,
+                              ),
+                              trailing: IconButton(
+                                icon: Icon(Icons.remove_circle),
+                                onPressed: () =>
+                                    _showDialogDeleteContact(bloc, contact),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     );
                   }
@@ -195,7 +208,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeAppBar extends StatefulWidget {
-  const HomeAppBar({Key key}) : super(key: key);
+  const HomeAppBar({Key? key}) : super(key: key);
 
   @override
   _HomeAppBarState createState() => _HomeAppBarState();
@@ -204,9 +217,9 @@ class HomeAppBar extends StatefulWidget {
 class _HomeAppBarState extends State<HomeAppBar> with TickerProviderStateMixin {
   bool _isSearching = false;
 
-  AnimationController _controller;
-  Animation<double> _opacityTextField;
-  Animation<double> _opacityTitle;
+  late AnimationController _controller;
+  late Animation<double> _opacityTextField;
+  late Animation<double> _opacityTitle;
 
   @override
   void initState() {

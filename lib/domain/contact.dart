@@ -4,8 +4,7 @@ import 'package:built_value/built_value.dart';
 part 'contact.g.dart';
 
 abstract class Contact implements Built<Contact, ContactBuilder> {
-  @nullable
-  int get id;
+  int? get id;
 
   String get name;
 
@@ -17,8 +16,7 @@ abstract class Contact implements Built<Contact, ContactBuilder> {
 
   DateTime get updatedAt;
 
-  @nullable
-  DateTime get createdAt;
+  DateTime? get createdAt;
 
   Contact._();
 

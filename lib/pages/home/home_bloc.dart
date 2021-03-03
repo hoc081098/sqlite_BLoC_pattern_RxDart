@@ -13,7 +13,7 @@ import 'home_state.dart';
 class HomeBloc extends DisposeCallbackBaseBloc {
   final Func1<String, void> search;
   final Func1<Contact, void> delete;
-  final Func0<void> deleteAll;
+  final VoidAction deleteAll;
 
   final DistinctValueStream<HomeState> state$;
   final Stream<HomeMessage> message$;
@@ -24,7 +24,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
     this.delete,
     this.state$,
     this.message$,
-    Func0<void> dispose,
+    VoidAction dispose,
   ) : super(dispose);
 
   factory HomeBloc(final ContactRepository contactRepo) {
@@ -80,7 +80,7 @@ class HomeBloc extends DisposeCallbackBaseBloc {
     String query,
   ) {
     return contactRepo
-        .search(query: query)
+        .search(by: query)
         .map(
           (contacts) => HomeState((b) => b
             ..contacts.replace(contacts)

@@ -10,7 +10,7 @@ import '../edit_or_add/edit_or_add_page.dart';
 import 'detail_bloc.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({Key key}) : super(key: key);
+  const DetailPage({Key? key}) : super(key: key);
 
   @override
   _DetailPageState createState() => _DetailPageState();
@@ -19,8 +19,8 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   final _dateFormat = DateFormat.yMd().add_Hms();
   final scrollController = ScrollController();
-  double _scale;
-  double _top;
+  var _scale = 0.0;
+  var _top = 0.0;
 
   void calculateScaleAndTop() {
     final defaultTopMargin = 256.0 - 23.0;
@@ -66,7 +66,7 @@ class _DetailPageState extends State<DetailPage> {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: RxStreamBuilder<Contact>(
+      body: RxStreamBuilder<Contact?>(
         stream: bloc.contact$,
         builder: (context, contact) {
           return Stack(
@@ -180,7 +180,7 @@ class _DetailPageState extends State<DetailPage> {
             leading: Icon(Icons.create),
             title: Text('Created at: '),
             subtitle: Text(
-              _dateFormat.format(contact.createdAt),
+              _dateFormat.format(contact.createdAt!),
             ),
           ),
           ListTile(

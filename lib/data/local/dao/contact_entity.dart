@@ -1,24 +1,23 @@
-import 'package:meta/meta.dart';
 
 import 'contact_entry.dart';
 
 class ContactEntity {
-  final int id;
+  final int? id;
   final String name;
   final String phone;
   final String address;
   final bool male;
   final DateTime updatedAt;
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   const ContactEntity({
-    @required this.id,
-    @required this.name,
-    @required this.phone,
-    @required this.address,
-    @required this.male,
-    @required this.updatedAt,
-    @required this.createdAt,
+    required this.id,
+    required this.name,
+    required this.phone,
+    required this.address,
+    required this.male,
+    required this.updatedAt,
+    required this.createdAt,
   });
 
   factory ContactEntity.fromJson(Map<String, dynamic> json) {

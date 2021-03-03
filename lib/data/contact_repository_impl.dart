@@ -1,3 +1,6 @@
+import 'package:built_collection/built_collection.dart';
+import 'package:collection/collection.dart';
+
 import '../domain/contact.dart';
 import '../domain/contact_repository.dart';
 import 'local/dao/contact_dao.dart';
@@ -9,39 +12,36 @@ class ContactRepositoryImpl implements ContactRepository {
   const ContactRepositoryImpl(this._contactDao);
 
   @override
-  Stream<List<Contact>> search({String query = ''}) {
-    return _contactDao.search(query).map((entities) {
-      return entities.map(_toContact).toList(growable: false);
-    });
+  Stream<BuiltList<Contact>> search({required String by}) {
+    return _contactDao.search(by).map(
+        (entities) => entities.map(_toContact).whereNotNull().toBuiltList());
   }
 
   @override
-  Stream<Contact> getContactById(int id) {
-    return _contactDao.findById(id).map(_toContact);
-  }
+  Stream<Contact?> getContactById(int id) =>
+      _contactDao.findById(id).map(_toContact);
 
   @override
-  Future<bool> delete(Contact contact) {
-    return _contactDao.deleteById(contact.id);
-  }
+  Future<bool> delete(Contact contact) => _contactDao
+      .deleteById(ArgumentError.checkNotNull(contact.id, 'Contact id'));
 
   @override
-  Future<bool> insert(Contact contact) {
-    return _contactDao.insert(_toEntity(contact));
-  }
+  Future<bool> insert(Contact contact) =>
+      _contactDao.insert(_toEntity(contact));
 
   @override
-  Future<bool> update(Contact contact) {
-    return _contactDao.update(_toEntity(contact));
-  }
+  Future<bool> update(Contact contact) =>
+      _contactDao.update(_toEntity(contact));
 
   @override
-  Future<void> deleteAll() {
-    return _contactDao.deleteAll();
-  }
+  Future<void> deleteAll() => _contactDao.deleteAll();
 }
 
-Contact _toContact(ContactEntity entity) {
+Contact? _toContact(ContactEntity? entity) {
+  if (entity == null) {
+    return null;
+  }
+
   return Contact(
     (b) => b
       ..id = entity.id

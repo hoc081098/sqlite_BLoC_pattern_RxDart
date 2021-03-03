@@ -31,7 +31,7 @@ class ContactDaoImpl implements ContactDao {
   }
 
   @override
-  Stream<ContactEntity> findById(int id) {
+  Stream<ContactEntity?> findById(int id) {
     return Stream.fromFuture(_briteDatabaseFuture).flatMap((db) {
       return db
           .createQuery(

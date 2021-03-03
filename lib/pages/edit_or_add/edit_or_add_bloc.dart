@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:disposebag/disposebag.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc_pattern/flutter_bloc_pattern.dart';
-import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart_ext/rxdart_ext.dart';
 
@@ -20,38 +18,36 @@ class EditOrAddBloc extends DisposeCallbackBaseBloc {
   final Func1<String, void> nameChanged;
   final Func1<String, void> phoneChanged;
   final Func1<String, void> addressChanged;
-  final Func1<Gender, void> genderChanged;
-  final Func0<void> submit;
+  final Func1<Gender?, void> genderChanged;
+  final VoidAction submit;
 
-  final Stream<NameError> nameError$;
-  final Stream<PhoneError> phoneError$;
-  final Stream<AddressError> addressError$;
+  final Stream<NameError?> nameError$;
+  final Stream<PhoneError?> phoneError$;
+  final Stream<AddressError?> addressError$;
   final ValueStream<Gender> gender$;
   final Stream<bool> isLoading$;
   final Stream<EditOrAddMessage> message$;
 
   EditOrAddBloc._(
-    Func0<void> dispose, {
-    @required this.nameChanged,
-    @required this.phoneChanged,
-    @required this.addressChanged,
-    @required this.genderChanged,
-    @required this.submit,
-    @required this.nameError$,
-    @required this.phoneError$,
-    @required this.addressError$,
-    @required this.gender$,
-    @required this.isLoading$,
-    @required this.message$,
+    VoidAction dispose, {
+    required this.nameChanged,
+    required this.phoneChanged,
+    required this.addressChanged,
+    required this.genderChanged,
+    required this.submit,
+    required this.nameError$,
+    required this.phoneError$,
+    required this.addressError$,
+    required this.gender$,
+    required this.isLoading$,
+    required this.message$,
   }) : super(dispose);
 
   factory EditOrAddBloc(
     final ContactRepository contactRepo,
     final bool addMode, {
-    Contact contact,
+    Contact? contact,
   }) {
-    assert(contactRepo != null, 'contactRepo cannot be null');
-    assert(addMode != null, 'addMode cannot be null');
     assert(addMode || contact != null,
         'contact must be not null when in editing mode');
 
@@ -112,10 +108,10 @@ class EditOrAddBloc extends DisposeCallbackBaseBloc {
                 contactRepo,
                 addMode,
                 contact?.id,
-                nameController.value,
-                phoneController.value,
-                addressController.value,
-                genderController.value,
+                nameController.requireValue,
+                phoneController.requireValue,
+                addressController.requireValue,
+                genderController.requireValue,
                 isLoadingController,
               )),
     ]).publish();
@@ -143,7 +139,7 @@ class EditOrAddBloc extends DisposeCallbackBaseBloc {
       nameChanged: nameController.add,
       phoneChanged: phoneController.add,
       addressChanged: addressController.add,
-      genderChanged: genderController.add,
+      genderChanged: (v) => v != null ? genderController.add(v) : null,
       submit: () => submitController.add(null),
       nameError$: nameError$,
       phoneError$: phoneError$,
@@ -157,7 +153,7 @@ class EditOrAddBloc extends DisposeCallbackBaseBloc {
   static Stream<EditOrAddMessage> _performInsertOrUpdate(
     ContactRepository contactRepo,
     bool addMode,
-    int id,
+    int? id,
     String name,
     String phone,
     String address,
