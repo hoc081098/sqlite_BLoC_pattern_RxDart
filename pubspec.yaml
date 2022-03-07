@@ -19,7 +19,7 @@ dependencies:
 
   disposebag: ^1.5.0-nullsafety.1
   flutter_disposebag: ^1.1.0-nullsafety.1
-  distinct_value_connectable_stream: ^1.2.0-nullsafety.5
+  distinct_value_connectable_stream: ^2.0.0
   sqlbrite: ^2.0.0-nullsafety.0
   flutter_provider: ^2.0.0
   flutter_bloc_pattern: ^2.0.0
