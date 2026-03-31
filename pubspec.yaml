@@ -22,7 +22,7 @@ dependencies:
   distinct_value_connectable_stream: ^1.2.0-nullsafety.5
   sqlbrite: ^2.0.0-nullsafety.0
   flutter_provider: ^2.0.0
-  flutter_bloc_pattern: ^2.0.0
+  flutter_bloc_pattern: ^3.0.0
 
 dev_dependencies:
   flutter_test:
